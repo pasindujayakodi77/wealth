@@ -1,7 +1,82 @@
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import toast from "react-hot-toast";
+
+
+
+
 export default function LoginPage() {
-    return(
-        <div>
-            <span>Login page</span>
-        </div>
-    )
+      const [email,setEmail] = useState("")
+    const [password,setPassword] = useState("")
+    const navigate = useNavigate()
+
+
+    function login(){
+        console.log(email, password)
+        axios.post(import.meta.env.VITE_BACKEND_URL+"/api/users/login",{
+            email: email,
+            password: password
+        }).then(
+            (response)=>{
+                console.log(response.data)
+                localStorage.setItem("token",response.data.token)
+
+                // const token = localStorage.getItem("token")
+                toast.success("login successful")
+                if(response.data.role == "admin"){
+
+                    //window.location.href = "/admin"
+                    navigate("/admin")
+
+                }else if(response.data.role == "user"){
+
+                    //window.location.href = "/"
+                    navigate("/")
+
+                }
+            }
+        ).catch(
+            (error)=>{
+                console.log(error)
+                toast.error("Login Failed")
+            }
+        )
+    }
+
+	return (
+		<div className="w-full h-screen bg-[url(./loginbg.png)] bg-cover bg-center flex justify-center items-center">
+			<div className="w-125 h-125 backdrop-blur-sm shadow-2xl rounded-[30px] relative gap-5 text-white flex flex-col items-center justify-center">
+				<h1 className="absolute top-5 text-2xl font-bold text-center my-5">Login</h1>
+                <div className="w-87.5  flex flex-col    ">
+                    <span className="text-lg ">Email</span>
+                    <input 
+                        onChange={
+                            (e)=>{
+                                setEmail(e.target.value)
+                            }
+                        }
+                    type="text" className="w-87.5 h-10 border border-white rounded-xl"/>
+                </div>
+                <div className="w-87.5  flex flex-col    ">
+                    <span className="text-lg ">Password</span>
+
+                    <input onChange={
+                        (e)=>{
+                            setPassword(e.target.value)
+                        }
+                    } type="password" className="w-87.5 h-10 border border-white rounded-xl"/>
+
+                </div>
+                <button onClick={login} className="w-87.5 h-10 bg-blue-500 rounded-xl text-white text-lg mt-5 hover:bg-blue-600 transition-all duration-300">
+                    Login
+                </button>
+                <p>Don't have an account? <Link to="/register" className="text-blue-500">Sign up</Link> from here</p>
+                
+			</div>
+		</div>
+	);
 }
+
+
+    
