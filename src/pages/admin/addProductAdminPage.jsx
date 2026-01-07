@@ -174,10 +174,13 @@ export default function AddProductPage() {
 						}}
 						className="w-full border h-10 rounded-md"
 					>
-						<option value="cream">Cream</option>
-						<option value="face wash">Face Wash</option>
-						<option value="soap">Soap</option>
-						<option value="fragrance">Fragrance</option>
+						<option value="Men's Shoes">Men's Shoes</option>
+						<option value= "Women's Shoes">Women's Shoes</option>
+						<option value="Kids' Shoes">Kids' Shoes</option>
+						<option value="Sports & Active Footwear">Sports & Active Footwear</option>
+            <option value="Casual Footwear">Casual Footwear</option>
+            <option value="School Footwear">School Footwear</option>
+            <option value="Sandals & Slippers">Sandals & Slippers</option>
 					</select>
 				</div>
 				<div className="w-full flex justify-center flex-row py-5">
