@@ -24,7 +24,9 @@ export default function LoginPage() {
       localStorage.setItem("token", data.token);
       if (remember) localStorage.setItem("rememberEmail", email); else localStorage.removeItem("rememberEmail");
       toast.success("Login successful");
-      if (data.role === "admin") navigate("/admin"); else navigate("/");
+      const role = String(data.role || "").toLowerCase();
+      if (role === "admin") navigate("/admin");
+      else navigate("/");
     } catch (err) {
       console.error(err);
       toast.error(err?.response?.data?.message || "Login failed");
