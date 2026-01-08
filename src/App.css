@@ -1,13 +1,42 @@
-/* Reset the Vite starter styling so pages can own the layout. */
-#root {
-  min-height: 100vh;
-  background: #030712;
-  color: #e2e8f0;
+/* Global theme tokens */
+:root {
+  --bg-base: #f5f7fb;
+  --surface: #ffffff;
+  --surface-soft: #eef1f7;
+  --header-bg: rgba(255, 255, 255, 0.9);
+  --text-primary: #0b0f14;
+  --text-muted: #4b5563;
+  --border: rgba(15, 23, 42, 0.12);
+  --accent: #0f172a;
+  --accent-2: #2fb3a6;
+  --highlight: #f6c76e;
+  --text-on-accent: #0b0f14;
+}
+
+[data-theme="dark"] {
+  --bg-base: #030712;
+  --surface: #0c111a;
+  --surface-soft: #0d121b;
+  --header-bg: rgba(12, 17, 26, 0.9);
+  --text-primary: #e5e7eb;
+  --text-muted: #94a3b8;
+  --border: rgba(255, 255, 255, 0.12);
+  --accent: #f6c76e;
+  --accent-2: #4fd1c5;
+  --highlight: #f6c76e;
+  --text-on-accent: #0b0f14;
 }
 
 body {
   margin: 0;
-  background: #030712;
-  color: #e2e8f0;
+  background: var(--bg-base);
+  color: var(--text-primary);
   font-family: "Inter", "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  transition: background 200ms ease, color 200ms ease;
+}
+
+#root {
+  min-height: 100vh;
+  background: var(--bg-base);
+  color: var(--text-primary);
 }
