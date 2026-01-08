@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { useGoogleLogin } from "@react-oauth/google";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -11,6 +12,28 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [remember, setRemember] = useState(false);
   const navigate = useNavigate();
+
+  const googleLogin = useGoogleLogin({
+    onSuccess: (response) => {
+      axios
+        .post(import.meta.env.VITE_BACKEND_URL + "/api/users/google-login", {
+          token: response.access_token,
+        })
+        .then((response) => {
+          console.log(response.data);
+          localStorage.setItem("token", response.data.token);
+          toast.success("Login successful");
+          if (response.data.role == "admin") {
+            navigate("/admin");
+          } else if (response.data.role == "user") {
+            navigate("/");
+          }
+        })
+        .catch(() => {
+          toast.error("google login failed");
+        });
+    },
+  });
 
   async function login(e) {
     e.preventDefault();
@@ -143,7 +166,7 @@ export default function LoginPage() {
           <div className="grid grid-cols-2 gap-3">
             <button
               type="button"
-              onClick={() => toast("Continue with Google (placeholder)")}
+              onClick={googleLogin}
               className="flex items-center justify-center gap-2 bg-white/6 hover:bg-white/10 border border-white/10 text-white py-2.5 rounded-lg transition-all duration-200"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
