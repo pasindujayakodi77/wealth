@@ -14,21 +14,36 @@ export default function AddProductPage() {
 	const [description, setDescription] = useState("");
 	const [stock, setStock] = useState("");
 	const [isAvailable, setIsAvailable] = useState(true);
-	const [category, setCategory] = useState("cream");
+	const [category, setCategory] = useState("Men's Shoes");  // Changed from "cream" to a valid option
     const navigate = useNavigate()
 
-    async function handleSubmit(){
-        const promisesArray = []
+    async function handleSubmit() {
+        // Decode the JWT token to check if email is verified (basic client-side decode)
+        const token = localStorage.getItem("token");
+        if (token == null) {
+            navigate("/login");
+            return;
+        }
 
-		    for(let i=0; i<images.length; i++){
+        // Simple JWT decode (payload is base64url encoded between the first two dots)
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if (!payload.isEmailVerified) {
+            toast.error("Please verify your email before adding products.");
+            return;
+        }
 
-			  const promise = uploadFile(images[i])
-		  	promisesArray[i] = promise}
+        const promisesArray = [];
+        for (let i = 0; i < images.length; i++) {
+            const promise = uploadFile(images[i]);
+            promisesArray[i] = promise;
+        }
 
-		    const responses = await Promise.all(promisesArray)
-	      console.log(responses)
-        	
-        const altNamesInArray = alternativeNames.split(",")
+        const responses = await Promise.all(promisesArray);
+        console.log(responses);
+
+        // Trim alternative names to avoid issues with spaces
+        const altNamesInArray = alternativeNames.split(",").map(name => name.trim());
+        
         const productData = {
             productId: productId,
             name: productName,
@@ -40,38 +55,39 @@ export default function AddProductPage() {
             stock: stock,
             isAvailable: isAvailable,
             category: category
-        }
+        };
 
-        const token = localStorage.getItem("token");
-
-        if(token == null){
-            navigate("/login");
-            return;
-        }
-
-        axios.post(import.meta.env.VITE_BACKEND_URL + "/api/products", productData, 
-            {
-                headers:{
-                    Authorization: "Bearer "+token
+        axios.post(import.meta.env.VITE_BACKEND_URL + "/api/products", productData, {
+            headers: {
+                Authorization: "Bearer " + token
+            }
+        }).then((res) => {
+            console.log("Product added successfully");
+            console.log(res.data);
+            toast.success("Product added successfully");
+            navigate("/admin/products");
+        }).catch((error) => {
+            console.error("Error adding product:", error);
+            
+            // Improved error handling for better debugging
+            if (error.response) {
+                if (error.response.status === 403) {
+                    toast.error("Access denied. Please verify your email to add products.");
+                } else if (error.response.status === 400) {
+                    toast.error("Invalid product data. Please check all fields.");
+                } else if (error.response.status === 401) {
+                    toast.error("Unauthorized. Please log in again.");
+                    localStorage.removeItem("token");
+                    navigate("/login");
+                } else {
+                    toast.error(`Failed to add product: ${error.response.data?.message || 'Unknown error'}`);
                 }
+            } else {
+                toast.error("Network error. Please check your connection and try again.");
             }
-        ).then(
-            (res)=>{
-                console.log("Product added successfully");
-                console.log(res.data);
-                toast.success("Product added successfully");
-                navigate("/admin/products");
-            }
-        ).catch(
-            (error)=>{
-                console.error("Error adding product:", error);
-                toast.error("Failed to add product");              
-            }
-        )
+        });
 
         console.log(productData);
-
-
     }
 
 	return (
