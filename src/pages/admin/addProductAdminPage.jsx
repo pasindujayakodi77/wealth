@@ -18,21 +18,30 @@ export default function AddProductPage() {
     const navigate = useNavigate()
 
     async function handleSubmit() {
-        // Decode the JWT token to check if email is verified (basic client-side decode)
+		// Ensure the user is authenticated before attempting the API call
         const token = localStorage.getItem("token");
         if (token == null) {
             navigate("/login");
             return;
         }
 
-        // Simple JWT decode (payload is base64url encoded between the first two dots)
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        if (!payload.isEmailVerified) {
-            toast.error("Please verify your email before adding products.");
-            return;
-        }
+		const numericLabelledPrice = Number(labelledPrice);
+		const numericPrice = Number(price);
+		const numericStock = Number(stock);
 
-        const promisesArray = [];
+		if (
+			Number.isNaN(numericLabelledPrice) ||
+			numericLabelledPrice < 0 ||
+			Number.isNaN(numericPrice) ||
+			numericPrice < 0 ||
+			Number.isNaN(numericStock) ||
+			numericStock < 0
+		) {
+			toast.error("Please enter valid non-negative numbers for price, labelled price, and stock.");
+			return;
+		}
+
+		const promisesArray = [];
         for (let i = 0; i < images.length; i++) {
             const promise = uploadFile(images[i]);
             promisesArray[i] = promise;
@@ -44,20 +53,20 @@ export default function AddProductPage() {
         // Trim alternative names to avoid issues with spaces
         const altNamesInArray = alternativeNames.split(",").map(name => name.trim());
         
-        const productData = {
-            productId: productId,
-            name: productName,
-            altNames: altNamesInArray,
-            labelledPrice: labelledPrice,
-            price: price,
-            images: responses,
-            description: description,
-            stock: stock,
-            isAvailable: isAvailable,
-            category: category
-        };
+		const productData = {
+			productId: productId,
+			name: productName,
+			altNames: altNamesInArray,
+			labelledPrice: numericLabelledPrice,
+			price: numericPrice,
+			images: responses,
+			description: description,
+			stock: numericStock,
+			isAvailable: isAvailable,
+			category: category
+		};
 
-        axios.post(import.meta.env.VITE_BACKEND_URL + "/api/products", productData, {
+		axios.post(import.meta.env.VITE_BACKEND_URL + "/api/products", productData, {
             headers: {
                 Authorization: "Bearer " + token
             }
@@ -66,15 +75,15 @@ export default function AddProductPage() {
             console.log(res.data);
             toast.success("Product added successfully");
             navigate("/admin/products");
-        }).catch((error) => {
+		}).catch((error) => {
             console.error("Error adding product:", error);
             
             // Improved error handling for better debugging
             if (error.response) {
                 if (error.response.status === 403) {
-                    toast.error("Access denied. Please verify your email to add products.");
+					toast.error(error.response.data?.message || "Access denied.");
                 } else if (error.response.status === 400) {
-                    toast.error("Invalid product data. Please check all fields.");
+					toast.error(error.response.data?.message || "Invalid product data. Please check all fields.");
                 } else if (error.response.status === 401) {
                     toast.error("Unauthorized. Please log in again.");
                     localStorage.removeItem("token");

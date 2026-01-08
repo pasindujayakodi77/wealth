@@ -4,7 +4,7 @@ export default function ProductCard(props) {
 	const product = props.product;
 	return (
 		<Link to={"/overview/"+product.productId}  className="w-75 h-100 flex flex-col  shrink-0 shadow-2xl rounded-2xl overflow-hidden">
-			<img src={product.images[0]} className="w-full h-68.75 object-cover" />
+			<img src={product.images?.[0] || 'https://via.placeholder.com/300x300?text=No+Image'} className="w-full h-68.75 object-cover" onError={(e) => e.target.src = 'https://via.placeholder.com/300x300?text=No+Image'} />
 			<div className="w-full h-31.25  flex flex-col p-0.75">
 				<span className="text-gray-400 text-[12px]">{product.productId}</span>
 				<h1 className="text-lg font-bold">

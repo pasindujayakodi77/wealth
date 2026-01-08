@@ -14,7 +14,7 @@ import ForgetPasswordPage from "./pages/client/forgotPassword";
     return (
         <BrowserRouter>
         <GoogleOAuthProvider clientId={clientId}>
-                <div className="w-full h-screen flex justify-center items-center bg-primary text-secondary">
+                <div className="min-h-screen bg-primary text-secondary">
                     <Toaster position="top-right" />
                     <Routes>
                         <Route path="/login" element={<LoginPage />} />
