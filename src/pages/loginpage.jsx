@@ -23,9 +23,10 @@ export default function LoginPage() {
           console.log(response.data);
           localStorage.setItem("token", response.data.token);
           toast.success("Login successful");
-          if (response.data.role == "admin") {
+          const role = String(response.data.role || "").toLowerCase();
+          if (role === "admin") {
             navigate("/admin");
-          } else if (response.data.role == "user") {
+          } else {
             navigate("/");
           }
         })

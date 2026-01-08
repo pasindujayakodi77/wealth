@@ -19,7 +19,7 @@ export default function AdminPage(){
                 <Link className="flex flex-row h-15 w-full border p-5 items-center text-xl  gap-6.25" to="/admin/users"><IoPeople /> Users</Link>
                 <Link className="flex flex-row h-15 w-full border p-5 items-center text-xl  gap-6.25" to="/admin/settings"><IoSettings /> Settings</Link>
             </div>
-                <Routes path="/*">
+                <Routes>
                     <Route path="/" element={<h1>Dashboard</h1>}/>
                     <Route path="/orders" element={<OrdersPageAdmin/>}/>
                     <Route path="/products" element={<ProductsAdminPage/>}/>

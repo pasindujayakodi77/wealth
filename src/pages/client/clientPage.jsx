@@ -10,7 +10,7 @@ export default function ClientWebPage() {
 		<div className="w-full h-screen max-h-screen">
 			<Header />
 			<div className="w-full h-[calc(100%-100px)] ">
-				<Routes path="/">
+				<Routes>
 					<Route
 						path="/"
 						element={

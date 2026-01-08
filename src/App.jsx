@@ -16,7 +16,7 @@ import ForgetPasswordPage from "./pages/client/forgotPassword";
         <GoogleOAuthProvider clientId={clientId}>
                 <div className="w-full h-screen flex justify-center items-center bg-primary text-secondary">
                     <Toaster position="top-right" />
-                    <Routes path="/">
+                    <Routes>
                         <Route path="/login" element={<LoginPage />} />
                         <Route path="/test" element={<TestPage />} />
                         <Route path="/register" element={<RegisterPage />} />
