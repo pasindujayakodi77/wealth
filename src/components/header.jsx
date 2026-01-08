@@ -76,7 +76,7 @@ export default function Header({ theme = "dark", onToggleTheme }) {
                     setIsOpen(true);
                 }
             }/>
-			<div className="hidden w-full md:flex justify-center items-center gap-6 text-[color:var(--text-primary)]">
+			<div className="hidden w-full md:flex justify-center items-center gap-6 text-(--text-primary)">
 				<Link to="/" className="text-lg hover:opacity-80 transition-opacity">
 					Home
 				</Link>
