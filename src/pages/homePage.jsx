@@ -100,6 +100,9 @@ export default function HomePage() {
         };
     }, []);
 
+    // ensure linter recognizes 'motion' usage
+    void motion;
+
     return (
         <div className="relative overflow-hidden" style={{ background: "var(--bg-base)", color: "var(--text-primary)" }}>
             <div className="pointer-events-none absolute inset-0 -z-10" style={{ background: "radial-gradient(circle at 15% 20%, rgba(246,199,110,0.16), transparent 30%), radial-gradient(circle at 82% 24%, rgba(79,209,197,0.14), transparent 28%), radial-gradient(circle at 58% 72%, rgba(255,255,255,0.05), transparent 32%)" }} />
@@ -114,16 +117,11 @@ export default function HomePage() {
                 >
                     <motion.div variants={fadeUp} className="space-y-6">
                         <div className="flex flex-wrap gap-3 text-xs uppercase tracking-[0.28em]" style={{ color: "var(--text-muted)" }}>
-                            {badges.map((badge) => (
-                                <motion.span
-                                    key={badge}
-                                    variants={fadeUp}
-                                    className="rounded-full px-4 py-2 backdrop-blur"
-                                    style={{ border: "1px solid var(--border)", background: "var(--surface-soft)", color: "var(--text-primary)" }}
-                                >
-                                    {badge}
-                                </motion.span>
-                            ))}
+                            <motion.div variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+                              {badges.map(b => (
+                                <motion.span key={b} variants={fadeUp}> {b} </motion.span>
+                              ))}
+                            </motion.div>
                         </div>
                         <div className="space-y-4">
                             <p className="text-sm" style={{ color: "var(--text-muted)" }}>new capsule // drop 07</p>
@@ -163,7 +161,9 @@ export default function HomePage() {
                         style={{ border: `1px solid var(--border)`, background: "var(--surface)" }}
                     >
                         <div className="absolute inset-x-6 top-6 h-10 rounded-full blur-2xl" style={{ background: "linear-gradient(90deg, rgba(246,199,110,0.25), rgba(255,255,255,0.08), transparent)" }} />
-                        <ImageSlider images={heroImages} />
+                        <motion.div variants={fadeUp} initial="hidden" animate="visible">
+                          <ImageSlider images={heroImages} />
+                        </motion.div>
                         <div className="absolute -left-10 bottom-10 hidden h-24 w-24 rounded-full blur-3xl lg:block" style={{ background: "rgba(246,199,110,0.28)" }} />
                         <div className="absolute -right-10 top-10 hidden h-24 w-24 rounded-full blur-3xl lg:block" style={{ background: "rgba(79,209,197,0.24)" }} />
                     </motion.div>
@@ -297,11 +297,10 @@ export default function HomePage() {
                         whileInView="visible"
                         viewport={{ once: true, amount: 0.2 }}
                         variants={stagger}
-                        className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4"
                     >
-                        {featuredProducts.map((product) => (
-                            <motion.div key={product.productId} variants={fadeUp} whileHover={{ y: -6 }}>
-                                <ProductCard product={product} />
+                        {featuredProducts.map(p => (
+                            <motion.div key={p.productId} variants={fadeUp}>
+                                <ProductCard product={p} />
                             </motion.div>
                         ))}
                     </motion.div>

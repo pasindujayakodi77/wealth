@@ -8,16 +8,23 @@ import { BiChevronLeft, BiUpload, BiX } from "react-icons/bi";
 export default function UpdateProductPage() {
     const location = useLocation()
     const [productId, setProductId] = useState(location.state.productId);
+    const [sku, setSku] = useState(location.state.sku || "");
     const [productName, setProductName] = useState(location.state.name);
+    const [brand, setBrand] = useState(location.state.brand || "");
     const [alternativeNames, setAlternativeNames] = useState(location.state.altNames.join(","));
     const [labelledPrice, setLabelledPrice] = useState(location.state.labelledPrice);
     const [price, setPrice] = useState(location.state.price);
+    const [currency, setCurrency] = useState(location.state.currency || "LKR");
     const [images, setImages] = useState([]);
     const [keptImages, setKeptImages] = useState(location.state.images || []);
     const [description, setDescription] = useState(location.state.description);
     const [stock, setStock] = useState(location.state.stock);
     const [isAvailable, setIsAvailable] = useState(location.state.isAvailable);
     const [category, setCategory] = useState(location.state.category);
+    const [color, setColor] = useState(location.state.color || "");
+    const [material, setMaterial] = useState(location.state.material || "");
+    const [sizes, setSizes] = useState(location.state.sizes ? location.state.sizes.join(",") : "");
+    const [tags, setTags] = useState(location.state.tags ? location.state.tags.join(",") : "");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
@@ -26,14 +33,20 @@ export default function UpdateProductPage() {
         const newErrors = {};
 
         if (!productId.trim()) newErrors.productId = "Product ID is required";
+        if (!sku.trim()) newErrors.sku = "SKU is required";
         if (!productName.trim()) newErrors.productName = "Product name is required";
+        if (!brand.trim()) newErrors.brand = "Brand is required";
         if (!price) newErrors.price = "Price is required";
         else if (isNaN(price) || Number(price) < 0) newErrors.price = "Price must be a positive number";
         if (!labelledPrice) newErrors.labelledPrice = "Labelled price is required";
         else if (isNaN(labelledPrice) || Number(labelledPrice) < 0) newErrors.labelledPrice = "Labelled price must be a positive number";
+        if (!currency.trim()) newErrors.currency = "Currency is required";
         if (!stock) newErrors.stock = "Stock is required";
         else if (isNaN(stock) || Number(stock) < 0) newErrors.stock = "Stock must be a positive number";
         if (!description.trim()) newErrors.description = "Description is required";
+        if (!color.trim()) newErrors.color = "Color is required";
+        if (!material.trim()) newErrors.material = "Material is required";
+        if (!sizes.trim()) newErrors.sizes = "Sizes are required";
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -61,18 +74,27 @@ export default function UpdateProductPage() {
             }
 
             const altNamesInArray = alternativeNames.split(",").map(name => name.trim()).filter(name => name);
+            const sizesInArray = sizes.split(",").map(size => Number(size.trim())).filter(size => !isNaN(size));
+            const tagsInArray = tags.split(",").map(tag => tag.trim()).filter(tag => tag);
 
             const productData = {
                 productId: productId.trim(),
+                sku: sku.trim(),
                 name: productName.trim(),
+                brand: brand.trim(),
                 altNames: altNamesInArray,
                 labelledPrice: Number(labelledPrice),
                 price: Number(price),
+                currency: currency.trim(),
                 images: imageUrls,
                 description: description.trim(),
                 stock: Number(stock),
                 isAvailable: isAvailable,
-                category: category
+                category: category,
+                color: color.trim(),
+                material: material.trim(),
+                sizes: sizesInArray,
+                tags: tagsInArray
             };
 
             const token = localStorage.getItem("token");
@@ -148,6 +170,24 @@ export default function UpdateProductPage() {
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    SKU *
+                                </label>
+                                <input
+                                    type="text"
+                                    value={sku}
+                                    onChange={(e) => {
+                                        setSku(e.target.value);
+                                        if (errors.sku) setErrors(prev => ({ ...prev, sku: undefined }));
+                                    }}
+                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                        errors.sku ? 'border-red-500' : 'border-gray-300'
+                                    }`}
+                                    placeholder="Enter SKU"
+                                />
+                                {errors.sku && <p className="mt-1 text-sm text-red-600">{errors.sku}</p>}
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
                                     Product Name *
                                 </label>
                                 <input
@@ -163,6 +203,24 @@ export default function UpdateProductPage() {
                                     placeholder="Enter product name"
                                 />
                                 {errors.productName && <p className="mt-1 text-sm text-red-600">{errors.productName}</p>}
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Brand *
+                                </label>
+                                <input
+                                    type="text"
+                                    value={brand}
+                                    onChange={(e) => {
+                                        setBrand(e.target.value);
+                                        if (errors.brand) setErrors(prev => ({ ...prev, brand: undefined }));
+                                    }}
+                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                        errors.brand ? 'border-red-500' : 'border-gray-300'
+                                    }`}
+                                    placeholder="Enter brand"
+                                />
+                                {errors.brand && <p className="mt-1 text-sm text-red-600">{errors.brand}</p>}
                             </div>
                         </div>
                         <div>
@@ -182,7 +240,7 @@ export default function UpdateProductPage() {
                     {/* Pricing */}
                     <div className="space-y-4">
                         <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Pricing</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                     Labelled Price (Rs.) *
@@ -222,6 +280,24 @@ export default function UpdateProductPage() {
                                     step="0.01"
                                 />
                                 {errors.price && <p className="mt-1 text-sm text-red-600">{errors.price}</p>}
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Currency *
+                                </label>
+                                <input
+                                    type="text"
+                                    value={currency}
+                                    onChange={(e) => {
+                                        setCurrency(e.target.value);
+                                        if (errors.currency) setErrors(prev => ({ ...prev, currency: undefined }));
+                                    }}
+                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                        errors.currency ? 'border-red-500' : 'border-gray-300'
+                                    }`}
+                                    placeholder="LKR"
+                                />
+                                {errors.currency && <p className="mt-1 text-sm text-red-600">{errors.currency}</p>}
                             </div>
                         </div>
                     </div>
@@ -357,6 +433,72 @@ export default function UpdateProductPage() {
                                     <option value="Sandals & Slippers">Sandals & Slippers</option>
                                 </select>
                             </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Color *
+                                </label>
+                                <input
+                                    type="text"
+                                    value={color}
+                                    onChange={(e) => {
+                                        setColor(e.target.value);
+                                        if (errors.color) setErrors(prev => ({ ...prev, color: undefined }));
+                                    }}
+                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                        errors.color ? 'border-red-500' : 'border-gray-300'
+                                    }`}
+                                    placeholder="Enter color"
+                                />
+                                {errors.color && <p className="mt-1 text-sm text-red-600">{errors.color}</p>}
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Material *
+                                </label>
+                                <input
+                                    type="text"
+                                    value={material}
+                                    onChange={(e) => {
+                                        setMaterial(e.target.value);
+                                        if (errors.material) setErrors(prev => ({ ...prev, material: undefined }));
+                                    }}
+                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                        errors.material ? 'border-red-500' : 'border-gray-300'
+                                    }`}
+                                    placeholder="Enter material"
+                                />
+                                {errors.material && <p className="mt-1 text-sm text-red-600">{errors.material}</p>}
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Sizes *
+                            </label>
+                            <input
+                                type="text"
+                                value={sizes}
+                                onChange={(e) => {
+                                    setSizes(e.target.value);
+                                    if (errors.sizes) setErrors(prev => ({ ...prev, sizes: undefined }));
+                                }}
+                                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                    errors.sizes ? 'border-red-500' : 'border-gray-300'
+                                }`}
+                                placeholder="Enter sizes separated by commas (e.g., 7,8,9,10)"
+                            />
+                            {errors.sizes && <p className="mt-1 text-sm text-red-600">{errors.sizes}</p>}
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Tags
+                            </label>
+                            <input
+                                type="text"
+                                value={tags}
+                                onChange={(e) => setTags(e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="Enter tags separated by commas"
+                            />
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
