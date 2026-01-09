@@ -43,6 +43,9 @@ export function addToCart(product , qty){
             localStorage.setItem("cart", JSON.stringify(cart));
         }
     }
+    
+    // Dispatch custom event to notify cart count changes
+    window.dispatchEvent(new CustomEvent('cartUpdated'));
 }
 
 export function getTotal(){
@@ -52,4 +55,13 @@ export function getTotal(){
         total += item.quantity * item.price;
     })
     return total;
+}
+
+export function getCartItemCount(){
+    const cart = getCart();
+    let count = 0;
+    cart.forEach((item)=>{
+        count += item.quantity;
+    })
+    return count;
 }

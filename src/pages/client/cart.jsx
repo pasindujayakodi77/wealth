@@ -48,7 +48,7 @@ export default function CartPage() {
 						</div>
 						<div className="w-47.5 h-full text-4xl md:text-md  flex flex-row justify-center items-center ">
 							<button
-								className="flex justify-center items-center w-7.5 rounded-lg cursor-pointer transition-colors duration-200"
+								className="flex justify-center items-center w-6 h-6 rounded-full cursor-pointer transition-colors duration-200 text-lg font-bold"
 								style={{
 									backgroundColor: "var(--accent)",
 									color: "white",
@@ -71,7 +71,7 @@ export default function CartPage() {
 							</button>
 							<span className="mx-2.5">{item.quantity}</span>
 							<button
-								className="flex justify-center items-center w-7.5 rounded-lg cursor-pointer transition-colors duration-200"
+								className="flex justify-center items-center w-6 h-6 rounded-full cursor-pointer transition-colors duration-200 text-lg font-bold"
 								style={{
 									backgroundColor: "var(--accent)",
 									color: "white",

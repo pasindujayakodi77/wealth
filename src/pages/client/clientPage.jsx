@@ -6,22 +6,44 @@ import ProductOverViewPage from "./productOverView";
 import CartPage from "./cart";
 import CheckoutPage from "./checkoutPage";
 import HomePage from "../homePage";
+import { getCartItemCount } from "../../utils/cart";
 
 export default function ClientWebPage() {
 	const prefersDark = typeof window !== "undefined" && window.matchMedia?.("(prefers-color-scheme: dark)").matches;
 	const storedTheme = typeof window !== "undefined" ? localStorage.getItem("theme") : null;
 	const [theme, setTheme] = useState(storedTheme || (prefersDark ? "dark" : "light"));
+	const [cartCount, setCartCount] = useState(0);
 
 	useEffect(() => {
 		document.documentElement.setAttribute("data-theme", theme);
 		localStorage.setItem("theme", theme);
 	}, [theme]);
 
+	useEffect(() => {
+		// Update cart count when component mounts and listen for storage changes
+		const updateCartCount = () => {
+			setCartCount(getCartItemCount());
+		};
+		
+		updateCartCount();
+		
+		// Listen for storage changes (when cart is updated in other tabs/windows)
+		window.addEventListener('storage', updateCartCount);
+		
+		// Listen for cart updates within the same tab
+		window.addEventListener('cartUpdated', updateCartCount);
+		
+		return () => {
+			window.removeEventListener('storage', updateCartCount);
+			window.removeEventListener('cartUpdated', updateCartCount);
+		};
+	}, []);
+
 	const toggleTheme = () => setTheme((prev) => (prev === "dark" ? "light" : "dark"));
 
 	return (
 		<div className="w-full min-h-screen flex flex-col" style={{ background: "var(--bg-base)", color: "var(--text-primary)" }}>
-			<Header theme={theme} onToggleTheme={toggleTheme} />
+			<Header theme={theme} onToggleTheme={toggleTheme} cartItems={cartCount} />
 			<main className="w-full flex-1 overflow-x-hidden">
 				<Routes>
 					<Route path="/" element={<HomePage theme={theme} />} />
