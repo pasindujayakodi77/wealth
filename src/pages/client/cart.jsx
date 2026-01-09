@@ -46,52 +46,46 @@ export default function CartPage() {
 								})}
 							</span>
 						</div>
-						<div className="w-47.5 h-full text-4xl md:text-md  flex flex-row justify-center items-center ">
-							<button
-								className="flex justify-center items-center w-6 h-6 rounded-full cursor-pointer transition-colors duration-200 text-lg font-bold"
-								style={{
-									backgroundColor: "var(--accent)",
-									color: "white",
-									border: "2px solid var(--accent)"
-								}}
-								onMouseEnter={(e) => {
-									e.target.style.backgroundColor = "var(--surface)";
-									e.target.style.color = "var(--accent)";
-								}}
-								onMouseLeave={(e) => {
-									e.target.style.backgroundColor = "var(--accent)";
-									e.target.style.color = "white";
-								}}
-								onClick={() => {
-									addToCart(item, -1);
-									setCart(getCart());
-								}}
-							>
-								-
-							</button>
-							<span className="mx-2.5">{item.quantity}</span>
-							<button
-								className="flex justify-center items-center w-6 h-6 rounded-full cursor-pointer transition-colors duration-200 text-lg font-bold"
-								style={{
-									backgroundColor: "var(--accent)",
-									color: "white",
-									border: "2px solid var(--accent)"
-								}}
-								onMouseEnter={(e) => {
-									e.target.style.backgroundColor = "var(--surface)";
-									e.target.style.color = "var(--accent)";
-								}}
-								onMouseLeave={(e) => {
-									e.target.style.backgroundColor = "var(--accent)";
-									e.target.style.color = "white";
-								}}
-								onClick={() => {
-									addToCart(item, 1);
-									setCart(getCart());
-								}}
-							>
-								+
-							</button>
+						<div className="w-47.5 h-full flex flex-row justify-center items-center">
+							{/* Quantity Selector */}
+							<div className="flex items-center bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+								<button
+									className="flex justify-center items-center w-10 h-10 text-xl font-bold cursor-pointer transition-all duration-200 hover:bg-red-500 hover:text-white active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+									style={{
+										color: "var(--text-primary)",
+										backgroundColor: "transparent"
+									}}
+									onClick={() => {
+										if (item.quantity > 1) {
+											addToCart(item, -1);
+											setCart(getCart());
+										}
+									}}
+									disabled={item.quantity <= 1}
+									aria-label="Decrease quantity"
+								>
+									−
+								</button>
+								<div className="flex items-center justify-center w-12 h-10 border-x border-gray-200 dark:border-gray-700">
+									<span className="text-lg font-semibold" style={{ color: "var(--text-primary)" }}>
+										{item.quantity}
+									</span>
+								</div>
+								<button
+									className="flex justify-center items-center w-10 h-10 text-xl font-bold cursor-pointer transition-all duration-200 hover:bg-green-500 hover:text-white active:scale-95"
+									style={{
+										color: "var(--text-primary)",
+										backgroundColor: "transparent"
+									}}
+									onClick={() => {
+										addToCart(item, 1);
+										setCart(getCart());
+									}}
+									aria-label="Increase quantity"
+								>
+									+
+								</button>
+							</div>
 						</div>
 						<div className="w-47.5 text-3xl md:text-md h-full flex justify-end items-center pr-2.5">
 							{/* total quantity * price */}
