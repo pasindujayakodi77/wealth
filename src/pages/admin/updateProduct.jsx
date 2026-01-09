@@ -11,7 +11,7 @@ export default function UpdateProductPage() {
     const [sku, setSku] = useState(location.state.sku || "");
     const [productName, setProductName] = useState(location.state.name);
     const [brand, setBrand] = useState(location.state.brand || "");
-    const [alternativeNames, setAlternativeNames] = useState(location.state.altNames.join(","));
+    const [alternativeNames, setAlternativeNames] = useState(location.state.altNames ? location.state.altNames.join(",") : "");
     const [labelledPrice, setLabelledPrice] = useState(location.state.labelledPrice);
     const [price, setPrice] = useState(location.state.price);
     const [currency, setCurrency] = useState(location.state.currency || "LKR");
@@ -19,13 +19,13 @@ export default function UpdateProductPage() {
     const [keptImages, setKeptImages] = useState(location.state.images || []);
     const [description, setDescription] = useState(location.state.description);
     const [stock, setStock] = useState(location.state.stock);
-    const [isAvailable, setIsAvailable] = useState(location.state.isAvailable);
+    const [isAvailable, setIsAvailable] = useState(location.state.isAvailable !== undefined ? location.state.isAvailable : true);
     const [category, setCategory] = useState(location.state.category);
     const [color, setColor] = useState(location.state.color || "");
     const [material, setMaterial] = useState(location.state.material || "");
     const [sizes, setSizes] = useState(location.state.sizes ? location.state.sizes.join(",") : "");
     const [tags, setTags] = useState(location.state.tags ? location.state.tags.join(",") : "");
-    const [isSpotlight, setIsSpotlight] = useState(location.state.isSpotlight || false);
+    const [isSpotlight, setIsSpotlight] = useState(location.state.isSpotlight !== undefined ? location.state.isSpotlight : false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
