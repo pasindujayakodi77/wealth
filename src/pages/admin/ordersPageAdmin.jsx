@@ -1,12 +1,11 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Paginator from "../../components/paginator";
 import toast from "react-hot-toast";
 import { BiSearch, BiX } from "react-icons/bi";
 
 export default function OrdersPageAdmin() {
 	const [orders, setOrders] = useState([]);
-	const [filteredOrders, setFilteredOrders] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [page, setPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(0);
@@ -35,7 +34,6 @@ export default function OrdersPageAdmin() {
 				)
 				.then((res) => {
 					setOrders(res.data.orders);
-					setFilteredOrders(res.data.orders);
 					setTotalPages(res.data.totalPages);
 					setLoading(false);
 					console.log(res.data);
@@ -48,15 +46,15 @@ export default function OrdersPageAdmin() {
 		}
 	}, [loading, page, limit]);
 
-	useEffect(() => {
+	const filteredOrders = useMemo(() => {
 		let filtered = orders;
 
 		// Search filter
 		if (searchTerm) {
 			filtered = filtered.filter(order =>
-				order.orderID.toLowerCase().includes(searchTerm.toLowerCase()) ||
-				order.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-				order.name.toLowerCase().includes(searchTerm.toLowerCase())
+				order.orderId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+				order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+				order.customerEmail.toLowerCase().includes(searchTerm.toLowerCase())
 			);
 		}
 
@@ -65,7 +63,7 @@ export default function OrdersPageAdmin() {
 			filtered = filtered.filter(order => order.status === statusFilter);
 		}
 
-		setFilteredOrders(filtered);
+		return filtered;
 	}, [orders, searchTerm, statusFilter]);
 
 	const handleOrderClick = (order) => {

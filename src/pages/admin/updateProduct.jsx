@@ -7,7 +7,7 @@ import { BiChevronLeft, BiUpload, BiX } from "react-icons/bi";
 
 export default function UpdateProductPage() {
     const location = useLocation()
-    const [productId, setProductId] = useState(location.state.productId);
+    const [productId] = useState(location.state.productId);
     const [sku, setSku] = useState(location.state.sku || "");
     const [productName, setProductName] = useState(location.state.name);
     const [brand, setBrand] = useState(location.state.brand || "");
@@ -25,6 +25,7 @@ export default function UpdateProductPage() {
     const [material, setMaterial] = useState(location.state.material || "");
     const [sizes, setSizes] = useState(location.state.sizes ? location.state.sizes.join(",") : "");
     const [tags, setTags] = useState(location.state.tags ? location.state.tags.join(",") : "");
+    const [isSpotlight, setIsSpotlight] = useState(location.state.isSpotlight || false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
@@ -94,7 +95,8 @@ export default function UpdateProductPage() {
                 color: color.trim(),
                 material: material.trim(),
                 sizes: sizesInArray,
-                tags: tagsInArray
+                tags: tagsInArray,
+                isSpotlight: isSpotlight
             };
 
             const token = localStorage.getItem("token");
@@ -526,6 +528,17 @@ export default function UpdateProductPage() {
                                     <span className="ml-2 text-sm text-gray-700">Unavailable</span>
                                 </label>
                             </div>
+                        </div>
+                        <div>
+                            <label className="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    checked={isSpotlight}
+                                    onChange={(e) => setIsSpotlight(e.target.checked)}
+                                    className="text-blue-600 focus:ring-blue-500 rounded"
+                                />
+                                <span className="ml-2 text-sm text-gray-700">Feature in This Week's Spotlight</span>
+                            </label>
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import toast from "react-hot-toast";
 import { BiEdit, BiPlus, BiTrash, BiSearch } from "react-icons/bi";
 import { Link, useNavigate } from "react-router-dom";
@@ -7,11 +7,11 @@ import Loader from "../../components/loader";
 
 export default function ProductsAdminPage() {
     const [products, setProducts] = useState([]);
-    const [filteredProducts, setFilteredProducts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [categoryFilter, setCategoryFilter] = useState("all");
     const [availabilityFilter, setAvailabilityFilter] = useState("all");
+    const [spotlightFilter, setSpotlightFilter] = useState("all");
 
     useEffect(() => {
         if (isLoading) {
@@ -19,7 +19,6 @@ export default function ProductsAdminPage() {
                 .get(import.meta.env.VITE_BACKEND_URL + "/api/products")
                 .then((res) => {
                     setProducts(res.data);
-                    setFilteredProducts(res.data);
                     setIsLoading(false);
                 })
                 .catch((error) => {
@@ -30,7 +29,7 @@ export default function ProductsAdminPage() {
         }
     }, [isLoading]);
 
-    useEffect(() => {
+    const filteredProducts = useMemo(() => {
         let filtered = products;
 
         // Search filter
@@ -52,8 +51,14 @@ export default function ProductsAdminPage() {
             filtered = filtered.filter(product => product.isAvailable === isAvailable);
         }
 
-        setFilteredProducts(filtered);
-    }, [products, searchTerm, categoryFilter, availabilityFilter]);
+        // Spotlight filter
+        if (spotlightFilter !== "all") {
+            const isSpotlight = spotlightFilter === "spotlight";
+            filtered = filtered.filter(product => product.isSpotlight === isSpotlight);
+        }
+
+        return filtered;
+    }, [products, searchTerm, categoryFilter, availabilityFilter, spotlightFilter]);
 
     const navigate = useNavigate();
 
@@ -74,7 +79,7 @@ export default function ProductsAdminPage() {
                         },
                     }
                 )
-                .then((res) => {
+                .then(() => {
                     console.log("Product deleted successfully");
                     toast.success("Product deleted successfully");
                     setIsLoading(true);
@@ -140,12 +145,24 @@ export default function ProductsAdminPage() {
                         <option value="unavailable">Unavailable</option>
                     </select>
 
+                    {/* Spotlight Filter */}
+                    <select
+                        value={spotlightFilter}
+                        onChange={(e) => setSpotlightFilter(e.target.value)}
+                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                        <option value="all">All Spotlight</option>
+                        <option value="spotlight">In Spotlight</option>
+                        <option value="not-spotlight">Not in Spotlight</option>
+                    </select>
+
                     {/* Clear Filters */}
                     <button
                         onClick={() => {
                             setSearchTerm("");
                             setCategoryFilter("all");
                             setAvailabilityFilter("all");
+                            setSpotlightFilter("all");
                         }}
                         className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
                     >
@@ -172,6 +189,7 @@ export default function ProductsAdminPage() {
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Spotlight</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
@@ -214,6 +232,15 @@ export default function ProductsAdminPage() {
                                                     : 'bg-red-100 text-red-800'
                                             }`}>
                                                 {product.isAvailable ? 'Available' : 'Unavailable'}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                                product.isSpotlight
+                                                    ? 'bg-yellow-100 text-yellow-800'
+                                                    : 'bg-gray-100 text-gray-800'
+                                            }`}>
+                                                {product.isSpotlight ? 'Spotlight' : 'Regular'}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">

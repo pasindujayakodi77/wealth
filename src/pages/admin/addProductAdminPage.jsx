@@ -23,6 +23,7 @@ export default function AddProductPage() {
 	const [material, setMaterial] = useState("");
 	const [sizes, setSizes] = useState("");
 	const [tags, setTags] = useState("");
+	const [isSpotlight, setIsSpotlight] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [errors, setErrors] = useState({});
 	const navigate = useNavigate();
@@ -96,7 +97,8 @@ export default function AddProductPage() {
 				color: color.trim(),
 				material: material.trim(),
 				sizes: sizesInArray,
-				tags: tagsInArray
+				tags: tagsInArray,
+				isSpotlight: isSpotlight
 			};
 
 			await axios.post(import.meta.env.VITE_BACKEND_URL + "/api/products", productData, {
@@ -505,6 +507,17 @@ export default function AddProductPage() {
 									<span className="ml-2 text-sm text-gray-700">Unavailable</span>
 								</label>
 							</div>
+						</div>
+						<div>
+							<label className="flex items-center">
+								<input
+									type="checkbox"
+									checked={isSpotlight}
+									onChange={(e) => setIsSpotlight(e.target.checked)}
+									className="text-blue-600 focus:ring-blue-500 rounded"
+								/>
+								<span className="ml-2 text-sm text-gray-700">Feature in This Week's Spotlight</span>
+							</label>
 						</div>
 						<div>
 							<label className="block text-sm font-medium text-gray-700 mb-1">
