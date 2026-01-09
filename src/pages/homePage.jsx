@@ -51,7 +51,7 @@ function HeroSlider() {
     );
 }
 
-function ProductTile({ product, delay = 0 }) {
+function ProductTile({ product, delay = 0, onClick }) {
     const displayImage = product.images?.[0] || product.image || "https://via.placeholder.com/600x600?text=No+Image";
     const price = product.price ?? product.labelledPrice ?? 0;
     const tag = product.tag || product.category || "Featured";
@@ -63,7 +63,8 @@ function ProductTile({ product, delay = 0 }) {
             viewport={{ once: true }}
             transition={{ delay, duration: 0.45 }}
             whileHover={{ y: -10 }}
-            className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl"
+            className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl cursor-pointer"
+            onClick={onClick}
         >
             <div className="relative aspect-square overflow-hidden">
                 <motion.img
@@ -82,9 +83,9 @@ function ProductTile({ product, delay = 0 }) {
                     <h3 className="text-xl font-semibold leading-tight">{product.name}</h3>
                 </div>
                 <div className="flex flex-col items-end">
-                    <span className="text-lg font-bold">${Number(price).toFixed(2)}</span>
+                    <span className="text-lg font-bold">LKR {Number(price).toFixed(2)}</span>
                     {product.labelledPrice && product.labelledPrice > price ? (
-                        <span className="text-xs text-white/50 line-through">${Number(product.labelledPrice).toFixed(2)}</span>
+                        <span className="text-xs text-white/50 line-through">LKR {Number(product.labelledPrice).toFixed(2)}</span>
                     ) : null}
                 </div>
             </div>
@@ -355,7 +356,12 @@ export default function HomePage() {
                 ) : (
                     <div className="mx-auto mt-10 grid max-w-7xl gap-6 md:grid-cols-2 lg:grid-cols-4">
                         {displayProducts.map((product, i) => (
-                            <ProductTile key={product.productId || product.id || i} product={product} delay={i * 0.08} />
+                            <ProductTile 
+                                key={product.productId || product.id || i} 
+                                product={product} 
+                                delay={i * 0.08}
+                                onClick={() => navigate(`/overview/${product.productId}`)}
+                            />
                         ))}
                     </div>
                 )}

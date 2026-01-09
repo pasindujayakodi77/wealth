@@ -57,13 +57,13 @@ export default function ProductOverViewPage() {
 							{product.labelledPrice > product.price ? (
 								<div>
 									<span className="text-2xl font-semibold  line-through mr-5">
-										{product.labelledPrice.toLocaleString("en-US", {
+										LKR {product.labelledPrice.toLocaleString("en-US", {
 											minimumFractionDigits: 2,
 											maximumFractionDigits: 2,
 										})}
 									</span>
 									<span className="text-3xl font-bold ">
-										{product.price.toLocaleString("en-US", {
+										LKR {product.price.toLocaleString("en-US", {
 											minimumFractionDigits: 2,
 											maximumFractionDigits: 2,
 										})}
@@ -72,7 +72,7 @@ export default function ProductOverViewPage() {
 							) : (
 								<div>
 									<span className="text-3xl font-bold ">
-										{product.price.toLocaleString("en-US", {
+										LKR {product.price.toLocaleString("en-US", {
 											minimumFractionDigits: 2,
 											maximumFractionDigits: 2,
 										})}

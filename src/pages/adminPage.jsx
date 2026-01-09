@@ -135,7 +135,7 @@ export default function AdminPage() {
                                             </div>
                                             <div className="ml-4">
                                                 <p className="text-sm font-medium text-gray-600">Revenue</p>
-                                                <p className="text-2xl font-bold text-gray-900">$--</p>
+                                                <p className="text-2xl font-bold text-gray-900">LKR --</p>
                                             </div>
                                         </div>
                                     </div>

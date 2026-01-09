@@ -110,7 +110,7 @@ export default function CheckoutPage() {
                   {item.name}
                 </span>
                 <span className="font-semibold text-center md:text-left">
-                  {item.price.toLocaleString("en-US", {
+                  LKR {item.price.toLocaleString("en-US", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
@@ -122,7 +122,7 @@ export default function CheckoutPage() {
                 {item.name}
               </span>
               <span className="font-semibold text-center md:text-left">
-                {item.price.toLocaleString("en-US", {
+                LKR {item.price.toLocaleString("en-US", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
@@ -156,7 +156,7 @@ export default function CheckoutPage() {
             </div>
              <div className="w-47.5 text-3xl md:text-md h-full flex justify-end items-center pr-2.5">
               <span className="font-semibold">
-                {(item.quantity * item.price).toLocaleString("en-US", {
+                LKR {(item.quantity * item.price).toLocaleString("en-US", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
@@ -177,7 +177,7 @@ export default function CheckoutPage() {
       })}
        <div className="md:w-200 w-full h-25 m-2.5 p-2.5 shadow-2xl flex flex-row items-center justify-end relative">
         <span className="font-bold text-2xl">
-          Total:{" "}
+          Total: LKR{" "}
           {getTotal().toLocaleString("en-US", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,

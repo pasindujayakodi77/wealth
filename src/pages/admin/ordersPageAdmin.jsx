@@ -190,7 +190,7 @@ export default function OrdersPageAdmin() {
 										{new Date(order.date).toLocaleDateString()}
 									</td>
 									<td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-										Rs. {order.total.toLocaleString("en-US", {
+										LKR {order.total.toLocaleString("en-US", {
 											minimumFractionDigits: 2,
 											maximumFractionDigits: 2,
 										})}

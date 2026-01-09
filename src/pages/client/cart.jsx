@@ -26,7 +26,7 @@ export default function CartPage() {
 								</span>
 								{/* price */}
 								<span className=" font-semibold text-center md:text-left">
-									{item.price.toLocaleString("en-US", {
+									LKR {item.price.toLocaleString("en-US", {
 										minimumFractionDigits: 2,
 										maximumFractionDigits: 2,
 									})}
@@ -39,7 +39,7 @@ export default function CartPage() {
 							</span>
 							{/* price */}
 							<span className=" font-semibold text-center md:text-left">
-								{item.price.toLocaleString("en-US", {
+								LKR {item.price.toLocaleString("en-US", {
 									minimumFractionDigits: 2,
 									maximumFractionDigits: 2,
 								})}
@@ -89,7 +89,7 @@ export default function CartPage() {
 			})}
             <div className="md:w-200 w-full h-25 m-2.5 p-2.5 shadow-2xl flex flex-row items-center justify-end relative">
 				<span className="font-bold text-2xl ">
-					Total:{" "}
+					Total: LKR{" "}
 					{getTotal().toLocaleString("en-US", {
 						minimumFractionDigits: 2,
 						maximumFractionDigits: 2,
