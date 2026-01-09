@@ -24,7 +24,7 @@ export default function ClientWebPage() {
 			<Header theme={theme} onToggleTheme={toggleTheme} />
 			<main className="w-full flex-1 overflow-x-hidden">
 				<Routes>
-					<Route path="/" element={<HomePage />} />
+					<Route path="/" element={<HomePage theme={theme} />} />
 					<Route path="/products" element={<ProductsPage />} />
 					<Route path="/reviews" element={<h1 className="text-3xl text-center">Reviews Page</h1>} />
 					<Route path="/about-us" element={<h1 className="text-3xl text-center">About Us Page</h1>} />

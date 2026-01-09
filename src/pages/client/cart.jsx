@@ -13,7 +13,8 @@ export default function CartPage() {
 				return (
 					<div
 						key={item.productId}
-						className="w-full md:w-200 h-50 md:h-25 m-2.5 shadow-2xl flex flex-row items-center relative "
+						className="w-full md:w-200 h-50 md:h-25 m-2.5 shadow-2xl flex flex-row items-center relative rounded-lg"
+						style={{ background: "var(--surface)", borderColor: "var(--border)", borderWidth: "1px", borderStyle: "solid" }}
 					>
 						<div className="md:w-25 w-50 justify-center items-center flex flex-col text-2xl md:text-md">
 							<img
@@ -47,7 +48,20 @@ export default function CartPage() {
 						</div>
 						<div className="w-47.5 h-full text-4xl md:text-md  flex flex-row justify-center items-center ">
 							<button
-								className="flex justify-center items-center w-7.5 rounded-lg bg-accent text-white cursor-pointer hover:bg-blue-400"
+								className="flex justify-center items-center w-7.5 rounded-lg cursor-pointer transition-colors duration-200"
+								style={{
+									backgroundColor: "var(--accent)",
+									color: "white",
+									border: "2px solid var(--accent)"
+								}}
+								onMouseEnter={(e) => {
+									e.target.style.backgroundColor = "var(--surface)";
+									e.target.style.color = "var(--accent)";
+								}}
+								onMouseLeave={(e) => {
+									e.target.style.backgroundColor = "var(--accent)";
+									e.target.style.color = "white";
+								}}
 								onClick={() => {
 									addToCart(item, -1);
 									setCart(getCart());
@@ -57,7 +71,20 @@ export default function CartPage() {
 							</button>
 							<span className="mx-2.5">{item.quantity}</span>
 							<button
-								className="flex justify-center items-center w-7.5 rounded-lg bg-accent text-white cursor-pointer hover:bg-blue-400"
+								className="flex justify-center items-center w-7.5 rounded-lg cursor-pointer transition-colors duration-200"
+								style={{
+									backgroundColor: "var(--accent)",
+									color: "white",
+									border: "2px solid var(--accent)"
+								}}
+								onMouseEnter={(e) => {
+									e.target.style.backgroundColor = "var(--surface)";
+									e.target.style.color = "var(--accent)";
+								}}
+								onMouseLeave={(e) => {
+									e.target.style.backgroundColor = "var(--accent)";
+									e.target.style.color = "white";
+								}}
 								onClick={() => {
 									addToCart(item, 1);
 									setCart(getCart());
@@ -87,7 +114,33 @@ export default function CartPage() {
 					</div>
 				);
 			})}
-            <div className="md:w-200 w-full h-25 m-2.5 p-2.5 shadow-2xl flex flex-row items-center justify-end relative">
+            <div className="md:w-200 w-full h-25 m-2.5 p-2.5 shadow-2xl flex flex-row items-center justify-between relative rounded-lg"
+				style={{ background: "var(--surface)", borderColor: "var(--border)", borderWidth: "1px", borderStyle: "solid" }}
+			>
+				<button
+					className="w-50 text-xl md:text-lg md:w-37.5 h-12 cursor-pointer rounded-xl font-semibold border-2 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+					style={{
+						backgroundColor: "var(--accent)",
+						color: "white",
+						borderColor: "var(--accent)",
+						fontFamily: "Inter, sans-serif"
+					}}
+					onMouseEnter={(e) => {
+						e.target.style.backgroundColor = "var(--surface)";
+						e.target.style.color = "var(--accent)";
+						e.target.style.boxShadow = "0 10px 25px rgba(0,0,0,0.15)";
+					}}
+					onMouseLeave={(e) => {
+						e.target.style.backgroundColor = "var(--accent)";
+						e.target.style.color = "white";
+						e.target.style.boxShadow = "";
+					}}
+					onClick={() => {
+						navigate("/checkout", { state: { items: cart } });
+					}}
+				>
+					Checkout
+				</button>
 				<span className="font-bold text-2xl ">
 					Total: LKR{" "}
 					{getTotal().toLocaleString("en-US", {
@@ -95,14 +148,6 @@ export default function CartPage() {
 						maximumFractionDigits: 2,
 					})}
 				</span>
-				<button
-					className="absolute left-2.5 w-50 text-2xl md:text-md md:w-37.5 h-12.5 cursor-pointer rounded-lg shadow-2xl bg-accent border-2 border-accent text-white hover:bg-white hover:text-accent"
-					onClick={() => {
-						navigate("/checkout", { state: { items: cart } });
-					}}
-				>
-					Checkout
-				</button>
 			</div>
 		</div>
 	);

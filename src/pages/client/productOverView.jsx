@@ -97,12 +97,12 @@ export default function ProductOverViewPage() {
 										},
 									});
 								}}
-								className="w-50 h-12.5 cursor-pointer rounded-xl shadow-2xl text-white bg-blue-900 border-[3px] border-blue-900 hover:bg-white hover:text-blue-900"
+								className="w-50 h-12.5 cursor-pointer rounded-xl shadow-2xl text-white bg-blue-900 border-[3px] border-blue-900 hover:bg-blue-100 hover:text-blue-900"
 							>
 								Buy Now
 							</button>
 							<button
-								className="w-50 h-12.5 cursor-pointer rounded-xl shadow-2xl text-white bg-blue-600 border-[3px] border-blue-600 hover:bg-white hover:text-blue-600"
+								className="w-50 h-12.5 cursor-pointer rounded-xl shadow-2xl text-white bg-blue-600 border-[3px] border-blue-600 hover:bg-blue-200 hover:text-blue-600"
 								onClick={() => {
 									addToCart(product, 1);
 									toast.success("Product added to cart");
@@ -117,7 +117,7 @@ export default function ProductOverViewPage() {
 			)}
 			{status == "error" && (
 				<div className="w-full flex flex-col items-center justify-center py-12 space-y-4">
-					<p className="text-lg text-gray-700">Failed to load product.</p>
+					<p className="text-lg" style={{ color: "var(--text-primary)" }}>Failed to load product.</p>
 					<button
 						onClick={() => navigate(-1)}
 						className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"

@@ -38,7 +38,8 @@ export default function ProductsPage() {
                         setQuery(e.target.value);
                         setLoading(true);
                     }}
-                    className="w-100 h-10 border border-gray-300 rounded-lg p-2"
+                    className="w-100 h-10 rounded-lg p-2"
+                    style={{ borderColor: "var(--border)", borderWidth: "1px", borderStyle: "solid", background: "var(--surface)", color: "var(--text-primary)" }}
                 />
             </div>
 			{loading ? (
