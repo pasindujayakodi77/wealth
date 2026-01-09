@@ -5,13 +5,15 @@ import toast from "react-hot-toast";
 import axios from "axios";
 
 export default function CheckoutPage() {
-   const location = useLocation();
+  const location = useLocation();
   const navigate = useNavigate();
 
   const [user, setUser] = useState(null);
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -44,6 +46,29 @@ export default function CheckoutPage() {
     toast.error("Please select items to checkout");
     navigate("/products");
   }
+
+  const handleDeleteClick = (item) => {
+    setItemToDelete(item);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
+    if (itemToDelete) {
+      const newCart = [...cart];
+      const index = newCart.findIndex((i) => i.productId === itemToDelete.productId);
+      if (index !== -1) {
+        newCart.splice(index, 1);
+        setCart(newCart);
+      }
+    }
+    setShowDeleteModal(false);
+    setItemToDelete(null);
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setItemToDelete(null);
+  };
 
   function getTotal() {
     let total = 0;
@@ -91,177 +116,201 @@ export default function CheckoutPage() {
       return;
     }
   }
-   console.log(cart);
+  console.log(cart);
   return (
-    <div className="w-screen max-w-[100vw] h-screen flex flex-col px-2.5 py-10 items-center">
-      {cart.map((item, index) => {
-        return (
-          <div
-            key={item.productId}
-            className="w-full md:w-200 h-50 md:h-25 m-2.5 shadow-2xl flex flex-row items-center relative rounded-lg"
-            style={{ background: "var(--surface)", borderColor: "var(--border)", borderWidth: "1px", borderStyle: "solid" }}
-          >
-            <div className="md:w-25 w-50 justify-center items-center flex flex-col text-2xl md:text-md">
-              <img
-                src={item.image}
-                className="w-25 h-25 object-cover"
-              />
-              <div className="h-full flex-col justify-center pl-2.5 md:hidden flex">
-                <span className="font-bold text-center md:text-left">
-                  {item.name}
-                </span>
-                <span className="font-semibold text-center md:text-left">
-                  LKR {item.price.toLocaleString("en-US", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </span>
+    <div className="min-h-screen py-8" style={{ background: "var(--bg-base)", color: "var(--text-primary)" }}>
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50" style={{
+          background: "rgba(0, 0, 0, 0.6)",
+          backdropFilter: "blur(2px)"
+        }}>
+          <div className="rounded-lg p-6 max-w-sm mx-4 shadow-xl" style={{ background: "var(--surface)", color: "var(--text-primary)" }}>
+            <div className="text-center">
+              <div className="mb-4">
+                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: "var(--surface-soft)" }}>
+                  <TbTrash className="w-8 h-8" style={{ color: "var(--accent-2)" }} />
+                </div>
+                <h3 className="text-lg font-semibold mb-2" style={{ color: "var(--text-primary)" }}>
+                  Remove Item
+                </h3>
+                <p style={{ color: "var(--text-muted)" }}>
+                  Are you sure you want to remove{" "}
+                  <span className="font-medium">{itemToDelete?.name}</span> from your cart?
+                </p>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={cancelDelete}
+                  className="flex-1 px-4 py-2 rounded-lg transition-colors"
+                  style={{ background: "var(--surface-soft)", color: "var(--text-primary)" }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  className="flex-1 px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  Remove
+                </button>
               </div>
             </div>
-            <div className="w-[320px] h-full flex-col justify-center pl-2.5 hidden md:flex">
-              <span className="font-bold text-center md:text-left">
-                {item.name}
-              </span>
-              <span className="font-semibold text-center md:text-left">
-                LKR {item.price.toLocaleString("en-US", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
-              </span>
-            </div>
-            <div className="w-47.5 h-full text-4xl md:text-md flex flex-row justify-center items-center">
-              <button
-                className="flex justify-center items-center w-7.5 rounded-lg cursor-pointer transition-colors duration-200"
-                style={{
-                  backgroundColor: "var(--accent)",
-                  color: "white",
-                  border: "2px solid var(--accent)"
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.backgroundColor = "var(--surface)";
-                  e.target.style.color = "var(--accent)";
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.backgroundColor = "var(--accent)";
-                  e.target.style.color = "white";
-                }}
-                onClick={() => {
-                  const newCart = [...cart];
-                  newCart[index].quantity -= 1;
-                  if (newCart[index].quantity <= 0) {
-                    newCart.splice(index, 1);
-                  }
-                  setCart(newCart);
-                }}
-              >
-                -
-              </button>
-              <span className="mx-2.5">{item.quantity}</span>
-              <button
-                className="flex justify-center items-center w-7.5 rounded-lg cursor-pointer transition-colors duration-200"
-                style={{
-                  backgroundColor: "var(--accent)",
-                  color: "white",
-                  border: "2px solid var(--accent)"
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.backgroundColor = "var(--surface)";
-                  e.target.style.color = "var(--accent)";
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.backgroundColor = "var(--accent)";
-                  e.target.style.color = "white";
-                }}
-                onClick={() => {
-                  const newCart = [...cart];
-                  newCart[index].quantity += 1;
-                  setCart(newCart);
-                }}
-              >
-                +
-              </button>
-            </div>
-             <div className="w-47.5 text-3xl md:text-md h-full flex justify-end items-center pr-2.5">
-              <span className="font-semibold">
-                LKR {(item.quantity * item.price).toLocaleString("en-US", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
-              </span>
-            </div>
-             <button
-              className="w-7.5 h-7.5 absolute top-0 right-0 md:top-8.75 md:-right-10 cursor-pointer bg-red-700 shadow rounded-full flex justify-center items-center text-white border-2 border-red-700 hover:bg-white hover:text-red-700"
-              onClick={() => {
-                const newCart = [...cart];
-                newCart.splice(index, 1);
-                setCart(newCart);
-              }}
+          </div>
+        </div>
+      )}
+
+      {/* Checkout Content */}
+      <div className="max-w-4xl mx-auto px-4">
+        <h1 className="text-3xl font-bold text-center mb-8" style={{ color: "var(--text-primary)" }}>Checkout</h1>
+
+        {cart.length === 0 ? (
+          <div className="text-center py-16">
+            <div className="text-6xl mb-4">🛒</div>
+            <h2 className="text-2xl font-semibold mb-2" style={{ color: "var(--text-primary)" }}>Your cart is empty</h2>
+            <p className="mb-6" style={{ color: "var(--text-muted)" }}>Add some products to get started!</p>
+            <button
+              onClick={() => navigate("/products")}
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
-              <TbTrash className="text-xl" />
+              Browse Products
             </button>
           </div>
-        );
-      })}
-       <div className="md:w-200 w-full h-25 m-2.5 p-2.5 shadow-2xl flex flex-row items-center justify-between relative rounded-lg"
-        style={{ background: "var(--surface)", borderColor: "var(--border)", borderWidth: "1px", borderStyle: "solid" }}
-      >
-        <button
-          onClick={placeOrder}
-          className="w-50 text-xl md:text-lg md:w-37.5 h-12 cursor-pointer rounded-xl font-semibold border-2 transition-all duration-300 hover:scale-105 hover:shadow-lg"
-          style={{
-            backgroundColor: "var(--accent)",
-            color: "white",
-            borderColor: "var(--accent)",
-            fontFamily: "Inter, sans-serif"
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.backgroundColor = "var(--surface)";
-            e.target.style.color = "var(--accent)";
-            e.target.style.boxShadow = "0 10px 25px rgba(0,0,0,0.15)";
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.backgroundColor = "var(--accent)";
-            e.target.style.color = "white";
-            e.target.style.boxShadow = "";
-          }}
-        >
-          Place Order
-        </button>
-        <span className="font-bold text-2xl">
-          Total: LKR{" "}
-          {getTotal().toLocaleString("en-US", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}
-        </span>
-      </div>
-       <div className="md:w-200 w-full m-2.5 p-2.5 shadow-2xl flex flex-col md:flex-row items-center justify-center gap-2 rounded-lg"
-        style={{ background: "var(--surface)", borderColor: "var(--border)", borderWidth: "1px", borderStyle: "solid" }}
-      >
-        <input
-          className="w-full md:w-50 h-10 rounded-lg p-2.5"
-          style={{ borderColor: "var(--border)", borderWidth: "1px", borderStyle: "solid", background: "var(--surface)", color: "var(--text-primary)" }}
-          type="text"
-          placeholder="Enter your name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <input
-          className="w-full md:w-50 h-10 rounded-lg p-2.5"
-          style={{ borderColor: "var(--border)", borderWidth: "1px", borderStyle: "solid", background: "var(--surface)", color: "var(--text-primary)" }}
-          type="text"
-          placeholder="Enter your address"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-        />
-        <input
-          className="w-full md:w-50 h-10 rounded-lg p-2.5"
-          style={{ borderColor: "var(--border)", borderWidth: "1px", borderStyle: "solid", background: "var(--surface)", color: "var(--text-primary)" }}
-          type="text"
-          placeholder="Enter your phone number"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-        />
+        ) : (
+          <>
+            {/* Cart Items */}
+            <div className="space-y-4 mb-8">
+              {cart.map((item, index) => (
+                <div
+                  key={item.productId}
+                  className="rounded-lg shadow-md p-4 flex items-center relative hover:shadow-lg transition-shadow"
+                  style={{ background: "var(--surface)" }}
+                >
+                  <div className="w-20 h-20 shrink-0 mr-4">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                  </div>
+
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-lg" style={{ color: "var(--text-primary)" }}>{item.name}</h3>
+                    <p style={{ color: "var(--text-muted)" }}>
+                      LKR {item.price.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                    </p>
+                  </div>
+
+                  {/* Quantity Controls */}
+                  <div className="flex items-center mr-4">
+                    <button
+                      disabled={item.quantity <= 1}
+                      onClick={() => {
+                        const newCart = [...cart];
+                        newCart[index].quantity -= 1;
+                        if (newCart[index].quantity <= 0) {
+                          newCart.splice(index, 1);
+                        }
+                        setCart(newCart);
+                      }}
+                      className="w-8 h-8 rounded-full flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      style={{ background: "var(--surface-soft)", color: "var(--text-primary)" }}
+                    >
+                      −
+                    </button>
+                    <span className="px-3 font-medium">{item.quantity}</span>
+                    <button
+                      onClick={() => {
+                        const newCart = [...cart];
+                        newCart[index].quantity += 1;
+                        setCart(newCart);
+                      }}
+                      className="w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+                      style={{ background: "var(--surface-soft)", color: "var(--text-primary)" }}
+                    >
+                      +
+                    </button>
+                  </div>
+
+                  <div className="text-right mr-4">
+                    <p className="font-semibold text-lg" style={{ color: "var(--text-primary)" }}>
+                      LKR {(item.quantity * item.price).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => handleDeleteClick(item)}
+                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition-colors"
+                    aria-label="Remove item"
+                  >
+                    <TbTrash size={16} />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            {/* Summary and Form */}
+            <div className="space-y-4">
+              <div className="rounded-lg shadow-md p-6 flex justify-between items-center" style={{ background: "var(--surface)" }}>
+                <button
+                  onClick={placeOrder}
+                  className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                >
+                  Place Order
+                </button>
+
+                <div className="text-right">
+                  <p className="text-sm" style={{ color: "var(--text-muted)" }}>Total</p>
+                  <p className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
+                    LKR {getTotal().toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                  </p>
+                </div>
+              </div>
+
+              <div className="rounded-lg shadow-md p-6 space-y-4" style={{ background: "var(--surface)" }}>
+                <h2 className="text-xl font-semibold" style={{ color: "var(--text-primary)" }}>Shipping Information</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <input
+                    className="w-full h-10 rounded-lg p-3 border"
+                    style={{
+                      borderColor: "var(--border)",
+                      background: "var(--surface)",
+                      color: "var(--text-primary)"
+                    }}
+                    type="text"
+                    placeholder="Enter your name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                  <input
+                    className="w-full h-10 rounded-lg p-3 border"
+                    style={{
+                      borderColor: "var(--border)",
+                      background: "var(--surface)",
+                      color: "var(--text-primary)"
+                    }}
+                    type="text"
+                    placeholder="Enter your address"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                  />
+                  <input
+                    className="w-full h-10 rounded-lg p-3 border"
+                    style={{
+                      borderColor: "var(--border)",
+                      background: "var(--surface)",
+                      color: "var(--text-primary)"
+                    }}
+                    type="text"
+                    placeholder="Enter your phone number"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
