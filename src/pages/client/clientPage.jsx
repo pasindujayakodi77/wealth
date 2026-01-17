@@ -10,6 +10,7 @@ import ReviewsPage from "./reviewsPage";
 import FavouritesPage from "./favouritesPage";
 import ProfilePage from "./profilePage";
 import { getCartItemCount } from "../../utils/cart";
+import AboutPage from "./aboutPage";
 
 export default function ClientWebPage() {
 	const prefersDark = typeof window !== "undefined" && window.matchMedia?.("(prefers-color-scheme: dark)").matches;
@@ -84,7 +85,7 @@ export default function ClientWebPage() {
 					<Route path="/reviews" element={<ReviewsPage />} />
 					<Route path="/favourites" element={<FavouritesPage />} />
 					<Route path="/profile" element={<ProfilePage />} />
-					<Route path="/about-us" element={<h1 className="text-3xl text-center">About Us Page</h1>} />
+					<Route path="/about-us" element={<AboutPage />} />
 					<Route path="/contact-us" element={<h1 className="text-3xl text-center">Contact Us Page</h1>} />
 					<Route path="/cart" element={<CartPage />} />
 					<Route path="/overview/:productId" element={<ProductOverViewPage />} />
