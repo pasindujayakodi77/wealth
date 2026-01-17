@@ -9,6 +9,7 @@ import HomePage from "../homePage";
 import ReviewsPage from "./reviewsPage";
 import FavouritesPage from "./favouritesPage";
 import ProfilePage from "./profilePage";
+import OrdersPage from "./ordersPage";
 import { getCartItemCount } from "../../utils/cart";
 import AboutPage from "./aboutPage";
 import ContactPage from "./contactPage";
@@ -86,6 +87,7 @@ export default function ClientWebPage() {
 					<Route path="/reviews" element={<ReviewsPage />} />
 					<Route path="/favourites" element={<FavouritesPage />} />
 					<Route path="/profile" element={<ProfilePage />} />
+					<Route path="/orders" element={<OrdersPage />} />
 					<Route path="/about-us" element={<AboutPage />} />
 					<Route path="/contact-us" element={<ContactPage />} />
 					<Route path="/cart" element={<CartPage />} />

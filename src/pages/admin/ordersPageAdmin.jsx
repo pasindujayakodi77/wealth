@@ -173,7 +173,7 @@ export default function OrdersPageAdmin() {
 									</td>
 									<td className="px-6 py-4 whitespace-nowrap">
 										<div className="text-sm text-gray-900">{order.phone}</div>
-										<div className="text-sm text-gray-500 max-w-xs truncate">{order.address}</div>
+										<div className="text-sm text-gray-500 max-w-xs truncate">{order.address}{order.address2 ? ', ' + order.address2 : ''}, {order.city}, {order.state} {order.zip}, {order.country}</div>
 									</td>
 									<td className="px-6 py-4 whitespace-nowrap">
 										<span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
@@ -250,7 +250,19 @@ export default function OrdersPageAdmin() {
 											<p><span className="font-medium">Name:</span> {clickedOrder.name}</p>
 											<p><span className="font-medium">Email:</span> {clickedOrder.email}</p>
 											<p><span className="font-medium">Phone:</span> {clickedOrder.phone}</p>
-											<p><span className="font-medium">Address:</span> {clickedOrder.address}</p>
+											<p><span className="font-medium">Address:</span> {clickedOrder.address}{clickedOrder.address2 ? ', ' + clickedOrder.address2 : ''}</p>
+											<p><span className="font-medium">City:</span> {clickedOrder.city}</p>
+											<p><span className="font-medium">State:</span> {clickedOrder.state}</p>
+											<p><span className="font-medium">Zip:</span> {clickedOrder.zip}</p>
+											<p><span className="font-medium">Country:</span> {clickedOrder.country}</p>
+											<p><span className="font-medium">Payment Method:</span> {clickedOrder.paymentMethod}</p>
+											{clickedOrder.paymentMethod === "Card Payment" && (
+												<>
+													<p><span className="font-medium">Card Holder:</span> {clickedOrder.cardHolderName}</p>
+													<p><span className="font-medium">Card Number:</span> **** **** **** {clickedOrder.cardNumber.slice(-4)}</p>
+													<p><span className="font-medium">Expiry:</span> {clickedOrder.expiry}</p>
+												</>
+											)}
 											<p><span className="font-medium">Total:</span> Rs. {clickedOrder.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
 											<p><span className="font-medium">Date:</span> {new Date(clickedOrder.date).toLocaleString()}</p>
 										</div>
