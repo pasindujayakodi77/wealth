@@ -99,6 +99,16 @@
   color: var(--contact-muted);
 }
 
+.contact-link {
+  color: var(--contact-ink);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.contact-link:hover {
+  color: var(--contact-muted);
+}
+
 .contact-pulse {
   width: 10px;
   height: 10px;

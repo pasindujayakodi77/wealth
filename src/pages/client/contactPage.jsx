@@ -7,18 +7,21 @@ const contactMethods = [
     value: "pasindujaya687@gmail.com",
     description: "Expect a thoughtful reply within one business day.",
     action: "Send an email",
+    link: "mailto:pasindujaya687@gmail.com",
   },
   {
     label: "Call / WhatsApp",
     value: "+94 71 569 3636",
     description: "Talk directly with the founder team from 9am - 7pm IST.",
     action: "Tap to call",
+    link: "tel:+94715693636",
   },
   {
     label: "Studio address",
     value: "No 41, Siyanee Sobha Uyana, Yakkala",
     description: "Visit by appointment for tactile previews and fittings.",
     action: "Plan a visit",
+    link: "https://maps.google.com/?q=No%2041,%20Siyanee%20Sobha%20Uyana,%20Yakkala",
   },
 ];
 
@@ -69,7 +72,9 @@ export default function ContactPage() {
               <h3>{method.value}</h3>
               <p className="contact-copy">{method.description}</p>
               <div className="contact-action">
-                <span>{method.action}</span>
+                <a href={method.link} className="contact-link">
+                  {method.action}
+                </a>
                 <span className="contact-pulse" />
               </div>
             </motion.article>
