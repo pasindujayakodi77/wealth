@@ -10,12 +10,15 @@ export function getCart(){
     return cart;
 }
 
-export function addToCart(product , qty){
+export function addToCart(product , qty, size = null){
 
     const cart = getCart()
 
+    // If product is actually a cart item (has size property), use its size
+    const itemSize = product.size !== undefined ? product.size : size;
+
     const existingProductIndex = cart.findIndex((item)=>{
-        return item.productId === product.productId;
+        return item.productId === product.productId && item.size === itemSize;
     })
 
     if(existingProductIndex == -1){
@@ -26,7 +29,8 @@ export function addToCart(product , qty){
                 price: product.price,
                 name: product.name,
                 altNames: product.altNames,
-                image: product.images[0]
+                image: product.images ? product.images[0] : product.image,
+                size: itemSize
             }
         )
         localStorage.setItem("cart", JSON.stringify(cart));
@@ -43,7 +47,7 @@ export function addToCart(product , qty){
             localStorage.setItem("cart", JSON.stringify(cart));
         }
     }
-    
+
     // Dispatch custom event to notify cart count changes
     window.dispatchEvent(new CustomEvent('cartUpdated'));
 }

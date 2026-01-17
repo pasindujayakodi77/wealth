@@ -110,6 +110,11 @@ export default function CartPage() {
                     <p style={{ color: "var(--text-muted)" }}>
                       LKR {item.price.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                     </p>
+                    {item.size && (
+                      <p style={{ color: "var(--text-muted)" }}>
+                        Size: UK {item.size}
+                      </p>
+                    )}
                   </div>
 
                   {/* Quantity Controls */}
