@@ -145,6 +145,7 @@ export default function Header({ theme = "dark", onToggleTheme, cartItems = 0, u
 														<p className="text-xs opacity-70">{user.email}</p>
 													</div>
 													<div className="border-t" style={{ borderColor: "var(--border)" }}>
+														<button className="w-full text-left px-4 py-2 text-sm hover:bg-black/5 dark:hover:bg-white/5" onClick={() => { navigate('/profile'); setUserMenuOpen(false); }}>Profile</button>
 														<button className="w-full text-left px-4 py-2 text-sm hover:bg-black/5 dark:hover:bg-white/5" onClick={() => { navigate('/favourites'); setUserMenuOpen(false); }}>Favourites</button>
 														<button className="w-full text-left px-4 py-2 text-sm hover:bg-black/5 dark:hover:bg-white/5" onClick={() => { navigate('/orders'); setUserMenuOpen(false); }}>Orders</button>
 														<button className="w-full text-left px-4 py-2 text-sm hover:bg-black/5 dark:hover:bg-white/5" onClick={handleLogout}>Logout</button>

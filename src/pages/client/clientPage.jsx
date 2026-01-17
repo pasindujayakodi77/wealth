@@ -8,6 +8,7 @@ import CheckoutPage from "./checkoutPage";
 import HomePage from "../homePage";
 import ReviewsPage from "./reviewsPage";
 import FavouritesPage from "./favouritesPage";
+import ProfilePage from "./profilePage";
 import { getCartItemCount } from "../../utils/cart";
 
 export default function ClientWebPage() {
@@ -82,6 +83,7 @@ export default function ClientWebPage() {
 					<Route path="/products" element={<ProductsPage />} />
 					<Route path="/reviews" element={<ReviewsPage />} />
 					<Route path="/favourites" element={<FavouritesPage />} />
+					<Route path="/profile" element={<ProfilePage />} />
 					<Route path="/about-us" element={<h1 className="text-3xl text-center">About Us Page</h1>} />
 					<Route path="/contact-us" element={<h1 className="text-3xl text-center">Contact Us Page</h1>} />
 					<Route path="/cart" element={<CartPage />} />
