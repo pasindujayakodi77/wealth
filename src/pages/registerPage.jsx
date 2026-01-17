@@ -13,6 +13,8 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showVerification, setShowVerification] = useState(false);
+  const [otp, setOtp] = useState("");
   const navigate = useNavigate();
 
   const googleSignup = useGoogleLogin({
@@ -35,6 +37,11 @@ export default function RegisterPage() {
 
   async function register(e) {
     e.preventDefault();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
     if (password !== confirmPassword) {
       toast.error("Passwords do not match");
       return;
@@ -45,11 +52,33 @@ export default function RegisterPage() {
         import.meta.env.VITE_BACKEND_URL + "/api/users/register",
         { name, email, password }
       );
-      toast.success("Registration successful! Please login.");
-      navigate("/login");
+      toast.success("Registration successful! Please check your email for verification code.");
+      setShowVerification(true);
     } catch (err) {
       console.error(err);
       toast.error(err?.response?.data?.message || "Registration failed");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function verifyEmail(e) {
+    e.preventDefault();
+    if (!otp.trim()) {
+      toast.error("Please enter the verification code");
+      return;
+    }
+    setIsLoading(true);
+    try {
+      await axios.post(
+        import.meta.env.VITE_BACKEND_URL + "/api/users/verify-email",
+        { email, otp }
+      );
+      toast.success("Email verified successfully! You can now login.");
+      navigate("/login");
+    } catch (err) {
+      console.error(err);
+      toast.error(err?.response?.data?.message || "Verification failed");
     } finally {
       setIsLoading(false);
     }
@@ -76,10 +105,14 @@ export default function RegisterPage() {
             <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-amber-300 via-amber-400 to-amber-500" style={{ fontFamily: "cursive" }}>
               Wealth
             </h1>
-            <p className="text-white/80 text-sm mt-2">Create your account to get started.</p>
+            <p className="text-white/80 text-sm mt-2">
+              {showVerification ? "Verify your email" : "Create your account to get started."}
+            </p>
           </div>
 
-          <form onSubmit={register} className="space-y-5">
+          <div>
+            {!showVerification ? (
+              <form onSubmit={register} className="space-y-5">
             <div>
               <label className="block text-white/90 text-sm font-medium mb-2">Full Name</label>
               <div className="relative">
@@ -177,21 +210,68 @@ export default function RegisterPage() {
               )}
             </button>
           </form>
+          ) : (
+            <form onSubmit={verifyEmail} className="space-y-5">
+              <div>
+                <label className="block text-white/90 text-sm font-medium mb-2">Verification Code</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Mail className="h-5 w-5 text-white/60" />
+                  </div>
+                  <input
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    type="text"
+                    required
+                    maxLength="6"
+                    className="w-full bg-white/6 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200 text-center text-2xl tracking-widest"
+                    placeholder="000000"
+                  />
+                </div>
+                <p className="text-white/60 text-xs mt-2">Enter the 6-digit code sent to {email}</p>
+              </div>
 
-          <div className="mt-5 text-center">
-            <p className="text-white/70 text-sm">
-              Already have an account? <Link to="/login" className="text-blue-300 font-semibold">Sign in</Link>
-            </p>
-          </div>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-linear-to-r from-green-500 to-green-600 text-white font-semibold py-3 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.01] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? (
+                  <div className="flex items-center justify-center">
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
+                    Verifying...
+                  </div>
+                ) : (
+                  "Verify Email"
+                )}
+              </button>
 
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-white/10"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-transparent text-white/50">Or sign up with</span>
-            </div>
-          </div>
+              <button
+                type="button"
+                onClick={() => setShowVerification(false)}
+                className="w-full bg-transparent border border-white/20 text-white font-semibold py-2 rounded-xl hover:bg-white/5 transition-all duration-200"
+              >
+                Back to Registration
+              </button>
+            </form>
+          )}
+
+          {!showVerification && (
+            <>
+              <div className="mt-5 text-center">
+                <p className="text-white/70 text-sm">
+                  Already have an account? <Link to="/login" className="text-blue-300 font-semibold">Sign in</Link>
+                </p>
+              </div>
+
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-white/10"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-4 bg-transparent text-white/50">Or sign up with</span>
+                </div>
+              </div>
 
           <div className="grid grid-cols-2 gap-3">
             <button
@@ -219,8 +299,11 @@ export default function RegisterPage() {
               Facebook
             </button>
           </div>
+          </>
+          )}
 
           <p className="text-center text-white/50 text-xs mt-6">Protected by security encryption</p>
+          </div>
         </div>
       </div>
     </div>
