@@ -116,11 +116,11 @@ export default function ReviewsPage() {
                             >
                                 <div className="flex items-start gap-4 mb-4">
                                     <div className="w-12 h-12 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-lg">
-                                        {review.userId?.name?.charAt(0) || 'U'}
+                                        {review.userId?.firstName?.charAt(0) || 'U'}
                                     </div>
                                     <div className="flex-1">
                                         <h3 className="font-semibold text-lg" style={{ color: "var(--text-primary)" }}>
-                                            {review.userId?.name || 'Anonymous'}
+                                            {`${review.userId?.firstName || ''} ${review.userId?.lastName || ''}`.trim() || 'Anonymous'}
                                         </h3>
                                         <p className="text-sm opacity-70" style={{ color: "var(--text-secondary)" }}>
                                             Product ID: {review.productId}
