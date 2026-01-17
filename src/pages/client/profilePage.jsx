@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function ProfilePage() {
@@ -8,7 +8,7 @@ export default function ProfilePage() {
     const [name, setName] = useState("");
     const navigate = useNavigate();
 
-    const fetchUser = async () => {
+    const fetchUser = useCallback(async () => {
         const token = localStorage.getItem('token');
         if (!token) {
             navigate('/login');
@@ -35,11 +35,11 @@ export default function ProfilePage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [navigate]);
 
     useEffect(() => {
         fetchUser();
-    }, [navigate]);
+    }, [fetchUser]);
 
     const handleSave = async () => {
         const token = localStorage.getItem('token');
