@@ -14,6 +14,8 @@ export default function ProductOverViewPage() {
 	const [status, setStatus] = useState("loading");
 	const [selectedSize, setSelectedSize] = useState(null);
 	const [isFavorite, setIsFavorite] = useState(false);
+	const [showReviewModal, setShowReviewModal] = useState(false);
+	const [reviewData, setReviewData] = useState({ rating: 5, comment: '' });
 	const [expandedSections, setExpandedSections] = useState({
 		details: true,
 		delivery: false,
@@ -60,6 +62,37 @@ export default function ProductOverViewPage() {
 		}
 		addToCart(product, 1, selectedSize);
 		toast.success("Product added to bag");
+	};
+
+	const handleSubmitReview = async () => {
+		const token = localStorage.getItem("token");
+		if (!token) {
+			toast.error('Please log in to submit a review');
+			return;
+		}
+
+		try {
+			await axios.post(import.meta.env.VITE_BACKEND_URL + '/api/reviews', {
+				productId: product.productId,
+				rating: reviewData.rating,
+				comment: reviewData.comment
+			}, {
+				headers: {
+					Authorization: `Bearer ${token}`
+				}
+			});
+			toast.success('Review submitted successfully!');
+			setShowReviewModal(false);
+			setReviewData({ rating: 5, comment: '' });
+		} catch (error) {
+			if (error.response?.status === 403 && error.response?.data?.message === 'Email verification required to submit reviews') {
+				toast.error('Please verify your email to submit reviews');
+			} else if (error.response?.status === 401) {
+				toast.error('Please log in to submit a review');
+			} else {
+				toast.error('Failed to submit review');
+			}
+		}
 	};
 
 	return (
@@ -268,7 +301,31 @@ export default function ProductOverViewPage() {
 									</button>
 									{expandedSections.reviews && (
 										<div className="pb-4 px-4 text-sm" style={{ color: "var(--text-secondary)" }}>
-											<p>No reviews yet. Be the first to review this product.</p>
+											<p>No reviews</p>
+											<p>Have your say. Be the first to review the {product.name}</p>
+											{localStorage.getItem("token") ? (
+												<button
+													onClick={() => setShowReviewModal(true)}
+													className="mt-4 px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+													style={{
+														backgroundColor: "var(--text-primary)",
+														color: "var(--bg-base)"
+													}}
+													onMouseEnter={(e) => e.target.style.transform = "translateY(-2px)"}
+													onMouseLeave={(e) => e.target.style.transform = "translateY(0)"}
+												>
+													<span className="flex items-center gap-2">
+														<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+															<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+														</svg>
+														Write a Review
+													</span>
+												</button>
+											) : (
+												<p className="mt-4 text-sm" style={{ color: "var(--text-secondary)" }}>
+													Please <a href="/login" className="underline hover:opacity-80" style={{ color: "var(--text-primary)" }}>log in</a> to write a review
+												</p>
+											)}
 										</div>
 									)}
 								</div>
@@ -319,6 +376,123 @@ export default function ProductOverViewPage() {
 					>
 						Continue Shopping
 					</button>
+				</div>
+			)}
+
+			{/* Review Modal */}
+			{showReviewModal && (
+				<div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+					<div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto" style={{ backgroundColor: "var(--bg-base)", color: "var(--text-primary)" }}>
+						{/* Header */}
+						<div className="p-6 border-b" style={{ borderColor: "var(--border)" }}>
+							<div className="flex items-center justify-between">
+								<h2 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>Share Your Review</h2>
+								<button
+									onClick={() => setShowReviewModal(false)}
+									className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+									style={{ backgroundColor: "var(--overlay-bg)" }}
+								>
+									<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+									</svg>
+								</button>
+							</div>
+							<p className="text-sm mt-2" style={{ color: "var(--text-secondary)" }}>
+								Help others by sharing your experience with this product
+							</p>
+						</div>
+
+						{/* Form */}
+						<div className="p-6 space-y-6">
+							{/* Rating Section */}
+							<div>
+								<label className="block text-lg font-semibold mb-4" style={{ color: "var(--text-primary)" }}>
+									How would you rate this product?
+								</label>
+								<div className="flex gap-2 justify-center">
+									{[1, 2, 3, 4, 5].map((star) => (
+										<button
+											key={star}
+											onClick={() => setReviewData({ ...reviewData, rating: star })}
+											className={`p-3 rounded-xl transition-all duration-200 ${
+												star <= reviewData.rating
+													? 'bg-yellow-100 text-yellow-500 scale-110'
+													: 'bg-gray-100 text-gray-300 hover:bg-gray-200'
+											}`}
+											style={{
+												backgroundColor: star <= reviewData.rating ? '#fef3c7' : 'var(--overlay-bg)',
+												color: star <= reviewData.rating ? '#f59e0b' : 'var(--text-secondary)'
+											}}
+										>
+											<svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+												<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+											</svg>
+										</button>
+									))}
+								</div>
+								<p className="text-center text-sm mt-3" style={{ color: "var(--text-secondary)" }}>
+									{reviewData.rating} star{reviewData.rating !== 1 ? 's' : ''} selected
+								</p>
+							</div>
+
+							{/* Comment Section */}
+							<div>
+								<label className="block text-lg font-semibold mb-3" style={{ color: "var(--text-primary)" }}>
+									Write your review
+								</label>
+								<textarea
+									value={reviewData.comment}
+									onChange={(e) => {
+										if (e.target.value.length <= 500) {
+											setReviewData({ ...reviewData, comment: e.target.value });
+										}
+									}}
+									className="w-full p-4 border-2 rounded-xl resize-none focus:outline-none focus:ring-2 transition-all duration-200"
+									rows="5"
+									placeholder="Tell others about your experience... What did you like or dislike about this product?"
+									style={{
+										borderColor: "var(--border)",
+										backgroundColor: "var(--bg-base)",
+										color: "var(--text-primary)",
+										boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
+									}}
+									onFocus={(e) => e.target.style.borderColor = "var(--text-primary)"}
+									onBlur={(e) => e.target.style.borderColor = "var(--border)"}
+								></textarea>
+								<p className={`text-sm mt-2 ${reviewData.comment.length > 450 ? 'text-red-500' : 'text-gray-500'}`} style={{ color: reviewData.comment.length > 450 ? '#ef4444' : 'var(--text-secondary)' }}>
+									{reviewData.comment.length}/500 characters
+								</p>
+							</div>
+						</div>
+
+						{/* Footer */}
+						<div className="p-6 border-t flex gap-4" style={{ borderColor: "var(--border)" }}>
+							<button
+								onClick={() => setShowReviewModal(false)}
+								className="flex-1 py-3 px-6 border-2 rounded-xl font-semibold transition-all duration-200 hover:opacity-80"
+								style={{
+									borderColor: "var(--border)",
+									backgroundColor: "var(--bg-base)",
+									color: "var(--text-primary)"
+								}}
+							>
+								Cancel
+							</button>
+							<button
+								onClick={handleSubmitReview}
+								disabled={!reviewData.comment.trim()}
+								className="flex-1 py-3 px-6 rounded-xl font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+								style={{
+									backgroundColor: "var(--text-primary)",
+									color: "var(--bg-base)"
+								}}
+								onMouseEnter={(e) => !reviewData.comment.trim() || (e.target.style.transform = "translateY(-1px)")}
+								onMouseLeave={(e) => e.target.style.transform = "translateY(0)"}
+							>
+								Submit Review
+							</button>
+						</div>
+					</div>
 				</div>
 			)}
 		</div>
