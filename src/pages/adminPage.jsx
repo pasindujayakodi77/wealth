@@ -8,6 +8,7 @@ import ProductsAdminPage from "./admin/productsAdminPage";
 import AddProductPage from "./admin/addProductAdminPage";
 import UpdateProductPage from "./admin/updateProduct";
 import OrdersPageAdmin from "./admin/ordersPageAdmin";
+import UsersAdminPage from "./admin/usersAdminPage";
 
 export default function AdminPage() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -48,9 +49,14 @@ export default function AdminPage() {
                     .filter(order => order.status === 'completed')
                     .reduce((sum, order) => sum + (order.totalAmount || 0), 0);
 
-                // For users, we'll use a placeholder since the users endpoint might not return all users
-                // In a real app, there would be an admin endpoint for user count
-                const totalUsers = 0; // Placeholder
+                // Fetch users
+                const usersRes = await axios.get(import.meta.env.VITE_BACKEND_URL + "/api/users/all", {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                });
+                const users = usersRes.data;
+                const totalUsers = Array.isArray(users) ? users.length : 0;
 
                 setDashboardData({
                     totalProducts,
@@ -157,7 +163,7 @@ export default function AdminPage() {
                 {/* Page content */}
                 <main className="flex-1 overflow-x-hidden overflow-y-auto bg-linear-to-br from-gray-50 to-gray-100 p-4 lg:p-6">
                     <Routes>
-                        <Route path="/" element={
+                        <Route index element={
                             <div className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                     <div className="bg-linear-to-r from-blue-500 to-blue-600 p-6 rounded-xl shadow-lg border border-blue-200 hover:shadow-xl transition-shadow duration-300">
@@ -283,10 +289,11 @@ export default function AdminPage() {
                                 </div>
                             </div>
                         } />
-                        <Route path="/orders" element={<OrdersPageAdmin />} />
-                        <Route path="/products" element={<ProductsAdminPage />} />
-                        <Route path="/newProduct" element={<AddProductPage />} />
-                        <Route path="/updateProduct" element={<UpdateProductPage />} />
+                        <Route path="orders" element={<OrdersPageAdmin />} />
+                        <Route path="products" element={<ProductsAdminPage />} />
+                        <Route path="newProduct" element={<AddProductPage />} />
+                        <Route path="updateProduct/:productId" element={<UpdateProductPage />} />
+                        <Route path="users" element={<UsersAdminPage />} />
                     </Routes>
                 </main>
             </div>

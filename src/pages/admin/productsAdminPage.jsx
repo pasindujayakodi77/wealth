@@ -247,9 +247,7 @@ export default function ProductsAdminPage() {
                                             <div className="flex space-x-2">
                                                 <button
                                                     onClick={() => {
-                                                        navigate("/admin/updateProduct", {
-                                                            state: product,
-                                                        });
+                                                        navigate("/admin/updateProduct/" + product.productId);
                                                     }}
                                                     className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50 transition-colors duration-200"
                                                     title="Edit"

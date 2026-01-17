@@ -1,39 +1,87 @@
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import uploadFile from "../../utils/mediaUpload";
 import { BiChevronLeft, BiUpload, BiX } from "react-icons/bi";
 
 export default function UpdateProductPage() {
-    const location = useLocation()
-    const [productId] = useState(location.state.productId);
-    const [sku, setSku] = useState(location.state.sku || "");
-    const [productName, setProductName] = useState(location.state.name);
-    const [brand, setBrand] = useState(location.state.brand || "");
-    const [alternativeNames, setAlternativeNames] = useState(location.state.altNames ? location.state.altNames.join(",") : "");
-    const [labelledPrice, setLabelledPrice] = useState(location.state.labelledPrice);
-    const [price, setPrice] = useState(location.state.price);
-    const [currency, setCurrency] = useState(location.state.currency || "LKR");
+    const { productId } = useParams();
+    const [sku, setSku] = useState("");
+    const [productName, setProductName] = useState("");
+    const [brand, setBrand] = useState("");
+    const [alternativeNames, setAlternativeNames] = useState("");
+    const [labelledPrice, setLabelledPrice] = useState("");
+    const [price, setPrice] = useState("");
+    const [currency, setCurrency] = useState("LKR");
     const [images, setImages] = useState([]);
-    const [keptImages, setKeptImages] = useState(location.state.images || []);
-    const [description, setDescription] = useState(location.state.description);
-    const [stock, setStock] = useState(location.state.stock);
-    const [isAvailable, setIsAvailable] = useState(location.state.isAvailable !== undefined ? location.state.isAvailable : true);
-    const [category, setCategory] = useState(location.state.category);
-    const [color, setColor] = useState(location.state.color || "");
-    const [material, setMaterial] = useState(location.state.material || "");
-    const [sizes, setSizes] = useState(location.state.sizes ? location.state.sizes.join(",") : "");
-    const [tags, setTags] = useState(location.state.tags ? location.state.tags.join(",") : "");
-    const [isSpotlight, setIsSpotlight] = useState(location.state.isSpotlight !== undefined ? location.state.isSpotlight : false);
+    const [keptImages, setKeptImages] = useState([]);
+    const [description, setDescription] = useState("");
+    const [stock, setStock] = useState("");
+    const [isAvailable, setIsAvailable] = useState(true);
+    const [category, setCategory] = useState("");
+    const [color, setColor] = useState("");
+    const [material, setMaterial] = useState("");
+    const [sizes, setSizes] = useState("");
+    const [tags, setTags] = useState("");
+    const [isSpotlight, setIsSpotlight] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchProduct = async () => {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                toast.error("Please log in to continue");
+                navigate("/login");
+                setIsLoading(false);
+                return;
+            }
+
+            try {
+                setIsLoading(true);
+                const res = await axios.get(
+                    import.meta.env.VITE_BACKEND_URL + "/api/products/" + productId,
+                    {
+                        headers: {
+                            Authorization: "Bearer " + token,
+                        },
+                    }
+                );
+                const product = res.data;
+                setSku(product.sku || "");
+                setProductName(product.name);
+                setBrand(product.brand || "");
+                setAlternativeNames(product.altNames ? product.altNames.join(",") : "");
+                setLabelledPrice(product.labelledPrice);
+                setPrice(product.price);
+                setCurrency(product.currency || "LKR");
+                setKeptImages(product.images || []);
+                setDescription(product.description);
+                setStock(product.stock);
+                setIsAvailable(product.isAvailable !== undefined ? product.isAvailable : true);
+                setCategory(product.category);
+                setColor(product.color || "");
+                setMaterial(product.material || "");
+                setSizes(product.sizes ? product.sizes.join(",") : "");
+                setTags(product.tags ? product.tags.join(",") : "");
+                setIsSpotlight(product.isSpotlight !== undefined ? product.isSpotlight : false);
+            } catch (error) {
+                console.error("Error fetching product:", error);
+                toast.error(error.response?.data?.message || "Failed to load product");
+                navigate("/admin/products");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchProduct();
+    }, [productId, navigate]);
 
     const validateForm = () => {
         const newErrors = {};
 
-        if (!productId.trim()) newErrors.productId = "Product ID is required";
         if (!sku.trim()) newErrors.sku = "SKU is required";
         if (!productName.trim()) newErrors.productName = "Product name is required";
         if (!brand.trim()) newErrors.brand = "Brand is required";
@@ -79,7 +127,6 @@ export default function UpdateProductPage() {
             const tagsInArray = tags.split(",").map(tag => tag.trim()).filter(tag => tag);
 
             const productData = {
-                productId: productId.trim(),
                 sku: sku.trim(),
                 name: productName.trim(),
                 brand: brand.trim(),
@@ -134,6 +181,14 @@ export default function UpdateProductPage() {
     const removeCurrentImage = (index) => {
         setKeptImages(keptImages.filter((_, i) => i !== index));
     };
+
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center min-h-screen">
+                <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-4xl mx-auto space-y-6">
