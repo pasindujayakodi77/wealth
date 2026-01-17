@@ -48,6 +48,27 @@ export default function ProductOverViewPage() {
 		}
 	}, [params.productId, status]);
 
+	useEffect(() => {
+		if (product) {
+			const favourites = JSON.parse(localStorage.getItem('favourites') || '[]');
+			// eslint-disable-next-line react-hooks/set-state-in-effect
+			setIsFavorite(favourites.includes(product.productId));
+		}
+	}, [product]);
+
+	const toggleFavourite = () => {
+		const favourites = JSON.parse(localStorage.getItem('favourites') || '[]');
+		if (isFavorite) {
+			const updated = favourites.filter(id => id !== product.productId);
+			localStorage.setItem('favourites', JSON.stringify(updated));
+		} else {
+			favourites.push(product.productId);
+			localStorage.setItem('favourites', JSON.stringify(favourites));
+		}
+		setIsFavorite(!isFavorite);
+		toast.success(isFavorite ? 'Removed from favourites' : 'Added to favourites');
+	};
+
 	const toggleSection = (section) => {
 		setExpandedSections(prev => ({
 			...prev,
@@ -187,7 +208,7 @@ export default function ProductOverViewPage() {
 									Add to Bag
 								</button>
 								<button
-									onClick={() => setIsFavorite(!isFavorite)}
+									onClick={toggleFavourite}
 									className="w-full py-4 border rounded-full font-medium transition-colors flex items-center justify-center gap-2"
 									style={{
 										borderColor: "var(--border)",

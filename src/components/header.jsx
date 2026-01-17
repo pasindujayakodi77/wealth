@@ -11,13 +11,24 @@ import {
     Phone, 
     Info, 
     Moon, 
-    Sun 
+    Sun,
+    User,
+    LogIn 
 } from "lucide-react";
+import PropTypes from 'prop-types';
 
-export default function Header({ theme = "dark", onToggleTheme, cartItems = 0 }) {
+export default function Header({ theme = "dark", onToggleTheme, cartItems = 0, user, setUser }) {
 	const navigate = useNavigate();
 	const [isOpen, setIsOpen] = useState(false);
 	const [scrolled, setScrolled] = useState(false);
+	const [userMenuOpen, setUserMenuOpen] = useState(false);
+
+	const handleLogout = () => {
+		setUser(null);
+		localStorage.removeItem('token');
+		navigate('/login');
+		setUserMenuOpen(false);
+	};
 
 	useEffect(() => {
 		const handleScroll = () => {
@@ -109,6 +120,51 @@ export default function Header({ theme = "dark", onToggleTheme, cartItems = 0 })
                                 </AnimatePresence>
                             </Link>
 
+							<div className="relative hidden lg:block">
+								{user ? (
+									<>
+										<button
+											onClick={() => setUserMenuOpen(!userMenuOpen)}
+											className="flex items-center gap-2 px-3 py-2 rounded-full border transition-all"
+											style={{ background: "var(--surface)", borderColor: "var(--border)", color: "var(--text-primary)" }}
+										>
+											<User size={18} />
+											<span className="text-sm font-medium">{user.name}</span>
+										</button>
+										<AnimatePresence>
+											{userMenuOpen && (
+												<motion.div
+													initial={{ opacity: 0, y: -10 }}
+													animate={{ opacity: 1, y: 0 }}
+													exit={{ opacity: 0, y: -10 }}
+													className="absolute right-0 top-full mt-2 w-48 rounded-lg border shadow-lg z-50"
+													style={{ background: "var(--surface)", borderColor: "var(--border)", color: "var(--text-primary)" }}
+												>
+													<div className="p-4">
+														<p className="text-sm font-medium">{user.name}</p>
+														<p className="text-xs opacity-70">{user.email}</p>
+													</div>
+													<div className="border-t" style={{ borderColor: "var(--border)" }}>
+														<button className="w-full text-left px-4 py-2 text-sm hover:bg-black/5 dark:hover:bg-white/5" onClick={() => { navigate('/favourites'); setUserMenuOpen(false); }}>Favourites</button>
+														<button className="w-full text-left px-4 py-2 text-sm hover:bg-black/5 dark:hover:bg-white/5" onClick={() => { navigate('/orders'); setUserMenuOpen(false); }}>Orders</button>
+														<button className="w-full text-left px-4 py-2 text-sm hover:bg-black/5 dark:hover:bg-white/5" onClick={handleLogout}>Logout</button>
+													</div>
+												</motion.div>
+											)}
+										</AnimatePresence>
+									</>
+								) : (
+									<Link
+										to="/login"
+										className="flex items-center gap-2 px-3 py-2 rounded-full border transition-all"
+										style={{ background: "var(--surface)", borderColor: "var(--border)", color: "var(--text-primary)" }}
+									>
+										<LogIn size={18} />
+										<span className="text-sm font-medium">Login</span>
+									</Link>
+								)}
+							</div>
+
 							<button
 								onClick={() => setIsOpen(true)}
 								className="lg:hidden p-2 rounded-full"
@@ -159,6 +215,31 @@ export default function Header({ theme = "dark", onToggleTheme, cartItems = 0 })
 									))}
 								</nav>
                                 
+                                {user ? (
+                                    <div className="mt-6 p-3 border rounded-lg" style={{ borderColor: "var(--border)" }}>
+                                        <div className="flex items-center gap-3">
+                                            <User size={24} style={{ color: "var(--highlight)" }} />
+                                            <div>
+                                                <p className="text-sm font-medium">{user.name}</p>
+                                                <p className="text-xs opacity-70">{user.email}</p>
+                                            </div>
+                                        </div>
+                                        <div className="mt-3 flex flex-col gap-2">
+                                            <button className="text-left text-sm hover:opacity-80" onClick={() => { navigate('/profile'); setIsOpen(false); }}>Profile</button>
+                                            <button className="text-left text-sm hover:opacity-80" onClick={() => { navigate('/favourites'); setIsOpen(false); }}>Favourites</button>
+                                            <button className="text-left text-sm hover:opacity-80" onClick={() => { navigate('/orders'); setIsOpen(false); }}>Orders</button>
+                                            <button className="text-left text-sm hover:opacity-80" onClick={handleLogout}>Logout</button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="mt-6 p-3 border rounded-lg" style={{ borderColor: "var(--border)" }}>
+                                        <Link to="/login" onClick={() => setIsOpen(false)} className="flex items-center gap-3">
+                                            <LogIn size={24} style={{ color: "var(--highlight)" }} />
+                                            <span className="text-lg font-medium">Login</span>
+                                        </Link>
+                                    </div>
+                                )}
+                                
                                 <button 
                                     onClick={onToggleTheme}
                                     className="w-full mt-8 flex items-center justify-between p-3 border rounded-lg"
@@ -178,3 +259,17 @@ export default function Header({ theme = "dark", onToggleTheme, cartItems = 0 })
 		</>
 	);
 }
+
+Header.propTypes = {
+    theme: PropTypes.string,
+    onToggleTheme: PropTypes.func.isRequired,
+    cartItems: PropTypes.number,
+    user: PropTypes.oneOfType([
+        PropTypes.shape({
+            name: PropTypes.string.isRequired,
+            email: PropTypes.string.isRequired,
+        }),
+        PropTypes.oneOf([null])
+    ]),
+    setUser: PropTypes.func.isRequired,
+};
