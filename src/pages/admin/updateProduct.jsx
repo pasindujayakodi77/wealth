@@ -481,9 +481,9 @@ export default function UpdateProductPage() {
                                     onChange={(e) => setCategory(e.target.value)}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 >
-                                    <option value="Men's Shoes">Men's Shoes</option>
-                                    <option value="Women's Shoes">Women's Shoes</option>
-                                    <option value="Kids' Shoes">Kids' Shoes</option>
+                                    <option value="Men&#39;s Shoes">Men&#39;s Shoes</option>
+                                    <option value="Women&#39;s Shoes">Women&#39;s Shoes</option>
+                                    <option value="Kids&#39; Shoes">Kids&#39; Shoes</option>
                                     <option value="Sports & Active Footwear">Sports & Active Footwear</option>
                                     <option value="Casual Footwear">Casual Footwear</option>
                                     <option value="School Footwear">School Footwear</option>
@@ -592,7 +592,7 @@ export default function UpdateProductPage() {
                                     onChange={(e) => setIsSpotlight(e.target.checked)}
                                     className="text-blue-600 focus:ring-blue-500 rounded"
                                 />
-                                <span className="ml-2 text-sm text-gray-700">Feature in This Week's Spotlight</span>
+                                <span className="ml-2 text-sm text-gray-700">Feature in This Week&#39;s Spotlight</span>
                             </label>
                         </div>
                         <div>

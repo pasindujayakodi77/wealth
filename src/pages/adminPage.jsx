@@ -145,7 +145,7 @@ export default function AdminPage() {
                                 <h1 className="text-2xl font-bold text-gray-900">
                                     {menuItems.find(item => isActive(item.path))?.label || 'Dashboard'}
                                 </h1>
-                                <p className="text-sm text-gray-600 mt-1">Welcome back, Admin! Here's what's happening today.</p>
+                                <p className="text-sm text-gray-600 mt-1">Welcome back, Admin! Here&#39;s what&#39;s happening today.</p>
                             </div>
                         </div>
                         <div className="flex items-center space-x-4">

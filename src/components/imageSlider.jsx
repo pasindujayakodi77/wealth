@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PropTypes from 'prop-types';
 
 export default function ImageSlider(props){
     const images = props.images;
@@ -25,3 +26,7 @@ export default function ImageSlider(props){
         </div>
     )
 }
+
+ImageSlider.propTypes = {
+    images: PropTypes.array.isRequired
+};

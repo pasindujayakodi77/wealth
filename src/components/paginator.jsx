@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 export default function Paginator(props){
     const { currentPage , totalPages, setCurrentPage , limit , setLimit , setLoading} = props // deconstructing a json
 
@@ -32,3 +34,12 @@ export default function Paginator(props){
         </div>
     )
 }
+
+Paginator.propTypes = {
+    currentPage: PropTypes.number.isRequired,
+    totalPages: PropTypes.number.isRequired,
+    setCurrentPage: PropTypes.func.isRequired,
+    limit: PropTypes.number.isRequired,
+    setLimit: PropTypes.func.isRequired,
+    setLoading: PropTypes.func.isRequired
+};

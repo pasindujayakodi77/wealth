@@ -151,7 +151,7 @@ export default function LoginPage() {
 
           <div className="mt-5 text-center">
             <p className="text-white/70 text-sm">
-              Don't have an account? <Link to="/register" className="text-blue-300 font-semibold">Create one</Link>
+              Don&#39;t have an account? <Link to="/register" className="text-blue-300 font-semibold">Create one</Link>
             </p>
           </div>
 

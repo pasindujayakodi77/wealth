@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import PropTypes from 'prop-types';
 
 export default function ProductCard(props) {
 	const product = props.product;
@@ -27,3 +28,14 @@ export default function ProductCard(props) {
 		</Link>
 	);
 }
+
+ProductCard.propTypes = {
+    product: PropTypes.shape({
+        productId: PropTypes.string.isRequired,
+        images: PropTypes.array,
+        name: PropTypes.string.isRequired,
+        category: PropTypes.string.isRequired,
+        labelledPrice: PropTypes.number.isRequired,
+        price: PropTypes.number.isRequired
+    }).isRequired
+};
