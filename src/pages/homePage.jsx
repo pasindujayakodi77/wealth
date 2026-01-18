@@ -3,6 +3,7 @@ import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Package, ShieldCheck, Sparkles, Star, Truck, Zap } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
 import Loader from "../components/loader";
 
 const heroImages = [
@@ -104,6 +105,12 @@ function ProductTile({ product, delay = 0, onClick }) {
     );
 }
 
+ProductTile.propTypes = {
+    product: PropTypes.object.isRequired,
+    delay: PropTypes.number,
+    onClick: PropTypes.func.isRequired,
+};
+
 export default function HomePage() {
     const navigate = useNavigate();
     const containerRef = useRef(null);
@@ -117,6 +124,7 @@ export default function HomePage() {
     const [featuredProducts, setFeaturedProducts] = useState([]);
     const [loadingProducts, setLoadingProducts] = useState(true);
     const [productError, setProductError] = useState("");
+    const [reviewsStats, setReviewsStats] = useState({ count: 0, average: 0 });
 
     useEffect(() => {
         let ignore = false;
@@ -146,6 +154,21 @@ export default function HomePage() {
         return () => {
             ignore = true;
         };
+    }, []);
+
+    useEffect(() => {
+        async function fetchReviewsStats() {
+            try {
+                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/reviews`);
+                const reviews = res.data;
+                const count = reviews.length;
+                const average = count > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / count : 0;
+                setReviewsStats({ count, average });
+            } catch (error) {
+                console.error("Failed to fetch reviews stats", error);
+            }
+        }
+        fetchReviewsStats();
     }, []);
 
     const displayProducts = featuredProducts;
@@ -247,10 +270,10 @@ export default function HomePage() {
                                 <div>
                                     <div className="flex items-center gap-1">
                                         {[...Array(5)].map((_, i) => (
-                                            <Star key={i} size={16} className="fill-current" style={{ color: "var(--text-primary)" }} />
+                                            <Star key={i} size={16} className={i < Math.floor(reviewsStats.average) ? "fill-current" : ""} style={{ color: "var(--text-primary)" }} />
                                         ))}
                                     </div>
-                                    <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>100+ happy runners</p>
+                                    <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>{reviewsStats.count > 0 ? `${reviewsStats.count}+ happy runners` : '100+ happy runners'}</p>
                                 </div>
                             </motion.div>
                         </motion.div>
@@ -351,7 +374,7 @@ export default function HomePage() {
                 <div className="mx-auto flex max-w-7xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <p className="text-xs uppercase tracking-[0.32em]" style={{ color: "var(--text-muted)" }}>Featured</p>
-                        <h2 className="mt-2 text-4xl font-semibold">This Week's Spotlight</h2>
+                        <h2 className="mt-2 text-4xl font-semibold">This Week&apos;s Spotlight</h2>
                         <p style={{ color: "var(--text-muted)" }}>Handpicked silhouettes tuned for speed, trail, and city.</p>
                     </div>
                     <Link to="/products" className="inline-flex items-center gap-2 text-sm" style={{ color: "var(--text-muted)" }}>
