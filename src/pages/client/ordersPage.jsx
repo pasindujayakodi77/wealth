@@ -8,6 +8,40 @@ export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const cancelOrder = async (orderId) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("Please login to cancel order");
+      return;
+    }
+
+    if (!window.confirm("Cancel order?")) {
+      return;
+    }
+
+    try {
+      await axios.put(
+        import.meta.env.VITE_BACKEND_URL + `/api/orders/cancel/${orderId}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      toast.success("Order cancelled successfully");
+      // Refresh orders
+      const res = await axios.get(
+        import.meta.env.VITE_BACKEND_URL + "/api/orders/user",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setOrders(res.data.orders || []);
+    } catch (err) {
+      console.error("Cancel order error:", err.response?.data || err.message);
+      toast.error("Failed to cancel order: " + (err.response?.data?.message || err.message));
+    }
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -107,6 +141,15 @@ export default function OrdersPage() {
                   >
                     {order.status || "pending"}
                   </span>
+                  {order.status === "pending" && (
+                    <button
+                      onClick={() => cancelOrder(order.orderID)}
+                      className="ml-2 px-2 py-1 rounded text-xs font-medium"
+                      style={{ background: "#d93025", color: "white" }}
+                    >
+                      Cancel
+                    </button>
+                  )}
                 </div>
                 <div className="text-right">
                   <p className="text-xs" style={{ color: "var(--text-muted)" }}>Total</p>

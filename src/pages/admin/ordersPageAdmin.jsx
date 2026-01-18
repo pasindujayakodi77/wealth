@@ -16,6 +16,7 @@ export default function OrdersPageAdmin() {
     const [orderNotes, setOrderNotes] = useState("");
 	const [searchTerm, setSearchTerm] = useState("");
 	const [statusFilter, setStatusFilter] = useState("all");
+	const [selectedOrders, setSelectedOrders] = useState([]);
 
 	useEffect(() => {
 		if (loading) {
@@ -52,9 +53,9 @@ export default function OrdersPageAdmin() {
 		// Search filter
 		if (searchTerm) {
 			filtered = filtered.filter(order =>
-				order.orderId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-				order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-				order.customerEmail.toLowerCase().includes(searchTerm.toLowerCase())
+				order.orderID.toLowerCase().includes(searchTerm.toLowerCase()) ||
+				order.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+				order.email.toLowerCase().includes(searchTerm.toLowerCase())
 			);
 		}
 
@@ -71,6 +72,71 @@ export default function OrdersPageAdmin() {
 		setOrderNotes(order.notes || "");
 		setClickedOrder(order);
 		setPopupVisible(true);
+	};
+
+	const handleQuickStatusUpdate = async (orderId, newStatus) => {
+		try {
+			await axios.put(
+				import.meta.env.VITE_BACKEND_URL + "/api/orders/" + orderId,
+				{ status: newStatus },
+				{
+					headers: {
+						Authorization: `Bearer ${localStorage.getItem("token")}`,
+					},
+				}
+			);
+			toast.success(`Order ${newStatus} successfully`);
+			setLoading(true);
+		} catch (err) {
+			console.error(err);
+			toast.error(`Failed to ${newStatus} order`);
+		}
+	};
+
+	const handleSelectAll = () => {
+		const allSelected = filteredOrders.length > 0 && selectedOrders.length === filteredOrders.length;
+		if (allSelected) {
+			setSelectedOrders([]);
+		} else {
+			setSelectedOrders(filteredOrders.map(order => order.orderID));
+		}
+	};
+
+	const handleSelectOrder = (orderId) => {
+		if (selectedOrders.includes(orderId)) {
+			setSelectedOrders(selectedOrders.filter(id => id !== orderId));
+		} else {
+			setSelectedOrders([...selectedOrders, orderId]);
+		}
+	};
+
+	const handleBulkStatusUpdate = async (newStatus) => {
+		if (selectedOrders.length === 0) {
+			toast.error("Please select orders to update");
+			return;
+		}
+
+		try {
+			await Promise.all(
+				selectedOrders.map(orderId =>
+					axios.put(
+						import.meta.env.VITE_BACKEND_URL + "/api/orders/" + orderId,
+						{ status: newStatus },
+						{
+							headers: {
+								Authorization: `Bearer ${localStorage.getItem("token")}`,
+							},
+						}
+					)
+				)
+			);
+			toast.success(`${selectedOrders.length} orders ${newStatus} successfully`);
+			setSelectedOrders([]);
+			setLoading(true);
+		} catch (err) {
+			console.error(err);
+			toast.error(`Failed to ${newStatus} orders`);
+		}
 	};
 
 	const handleSaveChanges = async () => {
@@ -143,18 +209,60 @@ export default function OrdersPageAdmin() {
 				</div>
 			</div>
 
+			{/* Bulk Actions */}
+			{selectedOrders.length > 0 && (
+				<div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+					<div className="flex items-center justify-between">
+						<span className="text-sm text-blue-800">
+							{selectedOrders.length} order(s) selected
+						</span>
+						<div className="flex space-x-2">
+							<button
+								onClick={() => handleBulkStatusUpdate("completed")}
+								className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
+							>
+								Mark as Completed
+							</button>
+							<button
+								onClick={() => handleBulkStatusUpdate("cancelled")}
+								className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700"
+							>
+								Cancel Orders
+							</button>
+							<button
+								onClick={() => {
+									setSelectedOrders([]);
+								}}
+								className="px-3 py-1 text-sm bg-gray-600 text-white rounded hover:bg-gray-700"
+							>
+								Clear Selection
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
+
 			{/* Orders Table */}
 			<div className="bg-white rounded-lg shadow-sm border overflow-hidden">
 				<div className="overflow-x-auto">
 					<table className="min-w-full divide-y divide-gray-200">
 						<thead className="bg-gray-50">
 							<tr>
+								<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+									<input
+										type="checkbox"
+										checked={filteredOrders.length > 0 && selectedOrders.length === filteredOrders.length}
+										onChange={handleSelectAll}
+										className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+									/>
+								</th>
 								<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
 								<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
 								<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
 								<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
 								<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
 								<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+								<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
 							</tr>
 						</thead>
 						<tbody className="bg-white divide-y divide-gray-200">
@@ -164,6 +272,17 @@ export default function OrdersPageAdmin() {
 									className="hover:bg-gray-50 cursor-pointer"
 									onClick={() => handleOrderClick(order)}
 								>
+									<td className="px-6 py-4 whitespace-nowrap">
+										<input
+											type="checkbox"
+											checked={selectedOrders.includes(order.orderID)}
+											onChange={(e) => {
+												e.stopPropagation();
+												handleSelectOrder(order.orderID);
+											}}
+											className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+										/>
+									</td>
 									<td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
 										{order.orderID}
 									</td>
@@ -194,6 +313,41 @@ export default function OrdersPageAdmin() {
 											minimumFractionDigits: 2,
 											maximumFractionDigits: 2,
 										})}
+									</td>
+									<td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+										<div className="flex space-x-2">
+											{order.status === "pending" && (
+												<>
+													<button
+														onClick={(e) => {
+															e.stopPropagation();
+															handleQuickStatusUpdate(order.orderID, "completed");
+														}}
+														className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded hover:bg-green-200"
+													>
+														Complete
+													</button>
+													<button
+														onClick={(e) => {
+															e.stopPropagation();
+															handleQuickStatusUpdate(order.orderID, "cancelled");
+														}}
+														className="px-2 py-1 text-xs bg-red-100 text-red-800 rounded hover:bg-red-200"
+													>
+														Cancel
+													</button>
+												</>
+											)}
+											<button
+												onClick={(e) => {
+													e.stopPropagation();
+													handleOrderClick(order);
+												}}
+												className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded hover:bg-blue-200"
+											>
+												Details
+											</button>
+										</div>
 									</td>
 								</tr>
 							))}
