@@ -15,11 +15,11 @@ export default function ProductCard(props) {
 					<span style={{ color: "var(--text-muted)" }} className="text-[14px]">{product.category}</span>
 				</h1>
 				<div>
-					{product.labelledPrice > product.price ? (
+					{product.isSpotlight && product.labelledPrice > product.price ? (
 						<p>
-                            <span className="line-through mr-2.5">LKR {product.labelledPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                            <span>LKR {product.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                        </p>
+							<span className="line-through mr-2.5">LKR {product.labelledPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+							<span>LKR {product.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+						</p>
 					) : (
 						<span>LKR {product.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
 					)}
@@ -36,6 +36,7 @@ ProductCard.propTypes = {
         name: PropTypes.string.isRequired,
         category: PropTypes.string.isRequired,
         labelledPrice: PropTypes.number.isRequired,
-        price: PropTypes.number.isRequired
+        price: PropTypes.number.isRequired,
+		isSpotlight: PropTypes.bool
     }).isRequired
 };
