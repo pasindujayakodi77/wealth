@@ -18,7 +18,12 @@ export default function AddProductPage() {
 	const [description, setDescription] = useState("");
 	const [stock, setStock] = useState("");
 	const [isAvailable, setIsAvailable] = useState(true);
-	const [category, setCategory] = useState("Men's Shoes");
+	const [category, setCategory] = useState("men");
+	const categoryOptions = [
+		{ value: "men", label: "Men" },
+		{ value: "women", label: "Women" },
+		{ value: "kids", label: "Kids" },
+	];
 	const [color, setColor] = useState("");
 	const [material, setMaterial] = useState("");
 	const [sizes, setSizes] = useState("");
@@ -47,6 +52,7 @@ export default function AddProductPage() {
 		if (!material.trim()) newErrors.material = "Material is required";
 		if (!sizes.trim()) newErrors.sizes = "Sizes are required";
 		if (images.length === 0) newErrors.images = "At least one image is required";
+		if (!category || !categoryOptions.some((opt) => opt.value === category)) newErrors.category = "Choose a valid category";
 
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
@@ -93,7 +99,7 @@ export default function AddProductPage() {
 				description: description.trim(),
 				stock: Number(stock),
 				isAvailable: isAvailable,
-				category: category,
+				category: category.trim().toLowerCase(),
 				color: color.trim(),
 				material: material.trim(),
 				sizes: sizesInArray,
@@ -402,17 +408,19 @@ export default function AddProductPage() {
 								</label>
 								<select
 									value={category}
-									onChange={(e) => setCategory(e.target.value)}
+									onChange={(e) => {
+										setCategory(e.target.value);
+										if (errors.category) setErrors(prev => ({ ...prev, category: undefined }));
+									}}
 									className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 								>
-									<option value="Men&#39;s Shoes">Men&#39;s Shoes</option>
-									<option value="Women&#39;s Shoes">Women&#39;s Shoes</option>
-									<option value="Kids&#39; Shoes">Kids&#39; Shoes</option>
-									<option value="Sports & Active Footwear">Sports & Active Footwear</option>
-									<option value="Casual Footwear">Casual Footwear</option>
-									<option value="School Footwear">School Footwear</option>
-									<option value="Sandals & Slippers">Sandals & Slippers</option>
+									{categoryOptions.map((opt) => (
+										<option key={opt.value} value={opt.value}>
+											{opt.label}
+										</option>
+									))}
 								</select>
+								{errors.category && <p className="mt-1 text-sm text-red-600">{errors.category}</p>}
 							</div>
 							<div>
 								<label className="block text-sm font-medium text-gray-700 mb-1">
