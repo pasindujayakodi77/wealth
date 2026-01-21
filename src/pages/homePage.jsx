@@ -347,7 +347,7 @@ export default function HomePage() {
                     >
                         {[
                             { icon: Truck, title: "Free Shipping", desc: "On local orders over 5000LKR" },
-                            { icon: Package, title: "Easy Returns", desc: "30-day return window" },
+                            { icon: Package, title: "Easy Returns", desc: "7-day return window" },
                             { icon: ShieldCheck, title: "Secure Checkout", desc: "Protected and verified" },
                         ].map((feature, i) => (
                             <motion.div
